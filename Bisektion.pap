@@ -1,26 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<FRAME GUID="2FB25471-B62C-4EE6-BD43-F819C095ACF8" FORMAT="0000" APP_VERSION="2.2.0.8" CHECKSUM="BC5FF2A0FDEE1AFD">
-  <PROJECT FORMAT="1.00" NAME="Bisektion" AUTHOR="phint" CREATED="2025.03.13 13:01:42" MODIFIED="2025.03.25 13:37:28">
+<FRAME GUID="2FB25471-B62C-4EE6-BD43-F819C095ACF8" FORMAT="0000" APP_VERSION="2.2.0.8" CHECKSUM="37A5301144585384">
+  <PROJECT FORMAT="1.00" NAME="Bisektion" AUTHOR="phint" CREATED="2025.03.13 13:01:42" MODIFIED="2025.03.26 17:51:31">
     <DIAGRAMS>
-      <DIAGRAM FORMAT="1.00" ID="0" NAME="Bisektion" CREATED="2025.03.13 13:01:46" MODIFIED="2025.03.25 13:37:28">
-        <LAYOUT FORMAT="1.00" COLUMNS="7" ROWS="21">
+      <DIAGRAM FORMAT="1.00" ID="0" NAME="Bisektion" CREATED="2025.03.13 13:01:46" MODIFIED="2025.03.26 17:51:31">
+        <LAYOUT FORMAT="1.00" COLUMNS="7" ROWS="23">
           <ENTRIES>
             <ENTRY COLUMN="0" ROW="8">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="153">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="0" ROW="16">
+            <ENTRY COLUMN="0" ROW="17">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="141">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="0" ROW="18">
+            <ENTRY COLUMN="0" ROW="20">
               <FIGURE SUBTYPE="PapOutput" FORMAT="1.00" ID="121">
                 <TEXT><![CDATA[Ausgabe von b und f(b)]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="0" ROW="19">
+            <ENTRY COLUMN="0" ROW="21">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="147">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
@@ -30,27 +30,27 @@
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="1" ROW="15">
+            <ENTRY COLUMN="1" ROW="16">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="142">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="1" ROW="18">
+            <ENTRY COLUMN="1" ROW="20">
               <FIGURE SUBTYPE="PapOutput" FORMAT="1.00" ID="120">
                 <TEXT><![CDATA[Ausgabe von a und f(a)]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="1" ROW="19">
+            <ENTRY COLUMN="1" ROW="21">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="150">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="2" ROW="9">
+            <ENTRY COLUMN="2" ROW="10">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="82">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="2" ROW="17">
+            <ENTRY COLUMN="2" ROW="19">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="62">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
@@ -101,61 +101,71 @@
               </FIGURE>
             </ENTRY>
             <ENTRY COLUMN="3" ROW="9">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="168">
+                <TEXT><![CDATA[f(c) = 0]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="3" ROW="10">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="84">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="3" ROW="10">
+            <ENTRY COLUMN="3" ROW="11">
               <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="20">
                 <TEXT><![CDATA[f(a)*f(b) < 0]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="3" ROW="11">
-              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="37">
-                <TEXT><![CDATA[f(c) >= 0]]></TEXT>
-              </FIGURE>
-            </ENTRY>
             <ENTRY COLUMN="3" ROW="12">
-              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="39">
-                <TEXT><![CDATA[a = c]]></TEXT>
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="37">
+                <TEXT><![CDATA[f(a)*f(c)<0]]></TEXT>
               </FIGURE>
             </ENTRY>
             <ENTRY COLUMN="3" ROW="13">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="39">
+                <TEXT><![CDATA[b = c]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="3" ROW="14">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="113">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="3" ROW="14">
+            <ENTRY COLUMN="3" ROW="15">
               <FIGURE SUBTYPE="PapModule" FORMAT="1.00" ID="111">
                 <TEXT><![CDATA[Berechnung]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="3" ROW="15">
+            <ENTRY COLUMN="3" ROW="16">
               <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="116">
                 <TEXT><![CDATA[f(a) = 0]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="3" ROW="16">
+            <ENTRY COLUMN="3" ROW="17">
               <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="118">
                 <TEXT><![CDATA[f(b) = 0]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="3" ROW="17">
+            <ENTRY COLUMN="3" ROW="18">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="161">
+                <TEXT><![CDATA[f(c) = 0]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="3" ROW="19">
               <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="58">
                 <TEXT><![CDATA[Genauigkeit von f(c) mit e erreicht]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="3" ROW="18">
+            <ENTRY COLUMN="3" ROW="20">
               <FIGURE SUBTYPE="PapOutput" FORMAT="1.00" ID="91">
                 <TEXT><![CDATA[Ausgabe von c und f(c)]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="3" ROW="19">
+            <ENTRY COLUMN="3" ROW="21">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="101">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="3" ROW="20">
+            <ENTRY COLUMN="3" ROW="22">
               <FIGURE SUBTYPE="PapEnd" FORMAT="1.00" ID="2">
                 <TEXT><![CDATA[Ende]]></TEXT>
               </FIGURE>
@@ -165,32 +175,47 @@
                 <TEXT><![CDATA[n ist die Nutzereigene Nummer zur Berechnung der Funktion (z.B.: Katalognummer)]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="5" ROW="11">
-              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="42">
+            <ENTRY COLUMN="4" ROW="9">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="170">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="4" ROW="18">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="163">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="4" ROW="20">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="164">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
             <ENTRY COLUMN="5" ROW="12">
-              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="41">
-                <TEXT><![CDATA[b = c]]></TEXT>
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="42">
+                <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
             <ENTRY COLUMN="5" ROW="13">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="41">
+                <TEXT><![CDATA[a = c]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="5" ROW="14">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="55">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="6" ROW="10">
+            <ENTRY COLUMN="6" ROW="11">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="96">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="6" ROW="18">
+            <ENTRY COLUMN="6" ROW="20">
               <FIGURE SUBTYPE="PapOutput" FORMAT="1.00" ID="93">
                 <TEXT><![CDATA[Ausgabe von Error "Keine Nullstelle gefunden! (mögliches Genauigkeitsproblem)"]]></TEXT>
               </FIGURE>
             </ENTRY>
-            <ENTRY COLUMN="6" ROW="19">
+            <ENTRY COLUMN="6" ROW="21">
               <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="99">
                 <TEXT><![CDATA[]]></TEXT>
               </FIGURE>
@@ -217,7 +242,7 @@
           <CONNECTION FORMAT="1.00" ID="114" FROM="113" TO="111" TEXT="" />
           <CONNECTION FORMAT="1.00" ID="117" FROM="116" TO="118" TEXT="nein" />
           <CONNECTION FORMAT="1.00" ID="56" FROM="41" TO="55" TEXT="" />
-          <CONNECTION FORMAT="1.00" ID="119" FROM="118" TO="58" TEXT="nein" />
+          <CONNECTION FORMAT="1.00" ID="119" FROM="118" TO="161" TEXT="nein" />
           <CONNECTION FORMAT="1.00" ID="59" FROM="58" TO="91" TEXT="ja" />
           <CONNECTION FORMAT="1.00" ID="63" FROM="58" TO="62" TEXT="nein" />
           <CONNECTION FORMAT="1.00" ID="65" FROM="62" TO="82" TEXT="" />
@@ -235,11 +260,18 @@
           <CONNECTION FORMAT="1.00" ID="146" FROM="141" TO="121" TEXT="" />
           <CONNECTION FORMAT="1.00" ID="151" FROM="150" TO="101" TEXT="" />
           <CONNECTION FORMAT="1.00" ID="138" FROM="137" TO="139" TEXT="nein" />
-          <CONNECTION FORMAT="1.00" ID="140" FROM="139" TO="84" TEXT="nein" />
+          <CONNECTION FORMAT="1.00" ID="140" FROM="139" TO="168" TEXT="nein" />
           <CONNECTION FORMAT="1.00" ID="154" FROM="139" TO="153" TEXT="ja" />
           <CONNECTION FORMAT="1.00" ID="155" FROM="153" TO="141" TEXT="" />
           <CONNECTION FORMAT="1.00" ID="157" FROM="137" TO="156" TEXT="ja" />
           <CONNECTION FORMAT="1.00" ID="158" FROM="156" TO="142" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="162" FROM="161" TO="58" TEXT="nein" />
+          <CONNECTION FORMAT="1.00" ID="165" FROM="164" TO="91" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="166" FROM="163" TO="164" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="167" FROM="161" TO="163" TEXT="ja" />
+          <CONNECTION FORMAT="1.00" ID="169" FROM="168" TO="84" TEXT="nein" />
+          <CONNECTION FORMAT="1.00" ID="171" FROM="170" TO="163" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="172" FROM="168" TO="170" TEXT="ja" />
         </CONNECTIONS>
       </DIAGRAM>
       <DIAGRAM FORMAT="1.00" ID="1" NAME="Berechnung" CREATED="2025.03.25 13:31:42" MODIFIED="2025.03.25 13:31:42">
