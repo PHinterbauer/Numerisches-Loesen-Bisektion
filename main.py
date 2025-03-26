@@ -69,6 +69,7 @@ class Bisektion():
 
 if __name__ == "__main__":
     bisektion = Bisektion()
+    # move to main loop
     bisektion.get_n()
     bisektion.get_interval_a()
     bisektion.get_interval_b()
