@@ -1,5 +1,5 @@
 import numpy as np
-from plot import Plot
+import matplotlib.pyplot as plt
 
 class Bisektion():
     """
@@ -222,6 +222,19 @@ class Bisektion():
             print("=" * total_length)
         else:
             print("No solution found!")  # No valid solution
+
+class Plotter(Bisektion):
+    def __init__(self, a, b, c, fa, fb, fc):
+        super().__init__()
+        self.a:float = a
+        self.b:float = b
+        self.c:float = c
+        self.fa:float = fa
+        self.fb:float = fb
+        self.fc:float = fc
+        self.plot_c:list = []
+        self.plot_fc:list = []
+
 
 if __name__ == "__main__":
     bisektion = Bisektion()
