@@ -1,4 +1,5 @@
 import numpy as np
+from plot import Plot
 
 class Bisektion():
     """
@@ -18,11 +19,7 @@ class Bisektion():
         formula (str): Mathematical formula as a string.
         controll (bool): Indicates if the interval is valid.
     """
-
     def __init__(self):
-        """
-        **__init__**: Initializes all attributes to default values.
-        """
         self.a: float = 0.0
         self.b: float = 0.0
         self.c: float = 0.0
@@ -228,6 +225,6 @@ class Bisektion():
 
 if __name__ == "__main__":
     bisektion = Bisektion()
-    bisektion.formula = "np.sqrt(self.n) - {x}"  # Formula for root finding
+    bisektion.formula = "np.sqrt(self.n) - {x}"  # Formula for root finding (e.g. "np.sqrt(self.n) - {x}" / "{x}**2 - self.n")
     bisektion.accuracy = 1e-50  # Desired accuracy (e.g. 1e-50 / 0.001)
     bisektion.main_loop()  # Start the bisection method
