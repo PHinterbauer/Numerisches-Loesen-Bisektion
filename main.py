@@ -237,6 +237,6 @@ class Plotter(Bisektion):
 
 if __name__ == "__main__":
     bisektion = Bisektion()
-    bisektion.formula = "np.sqrt(self.n) - {x}"  # Formula for root finding (e.g. "np.sqrt(self.n) - {x}" / "{x}**2 - self.n")
+    bisektion.formula = "np.sqrt(self.n) - {x}" # Formula for root finding (e.g. "np.sqrt(self.n) - {x}" / "{x}**2 - self.n")
     bisektion.accuracy = 0.001  # Desired accuracy (e.g. 1e-50 / 0.001)
     bisektion.main_loop()  # Start the bisection method
