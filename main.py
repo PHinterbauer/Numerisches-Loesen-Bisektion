@@ -223,6 +223,12 @@ class Bisektion():
         else:
             print("No solution found!")  # No valid solution
 
+class Newton_Raphson(Bisektion):
+    ...
+
+class Regula_Falsi(Bisektion):
+    ...
+
 class Plotter(Bisektion):
     def __init__(self, a, b, c, fa, fb, fc):
         super().__init__()
