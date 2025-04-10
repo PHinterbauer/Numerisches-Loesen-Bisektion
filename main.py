@@ -224,10 +224,33 @@ class Bisektion():
             print("No solution found!")  # No valid solution
 
 class Newton_Raphson(Bisektion):
-    ...
+    """
+    **Newton_Raphson**: Implements the Newton-Raphson method for root finding.
+
+    Inherits from:
+        Bisektion: Reuses the structure and methods of the bisection method.
+
+    Attributes:
+        formula_derivative (str): The derivative of the mathematical formula as a string.
+    """
+    def __init__(self):
+        super().__init__()
+        self.formula_derivative: str = ""  # Derivative of the formula
+        self.derivative: float = 0.0  # Derivative value
+
+    def calculate_c(self):
+        """
+        **calculate_c**: Calculates the next approximation (c) using the Newton-Raphson formula.
+        """
+        # Newton-Raphson formula: c = c - f(c) / f'(c)
+        self.derivative = eval(self.formula_derivative.format(x=self.c))  # Evaluate derivative at c
+        if self.derivative == 0:
+            raise ValueError("Derivative is zero. Newton-Raphson method fails.")
+        self.c = self.c - self.fc / self.derivative  # Update c
 
 class Regula_Falsi(Bisektion):
-    ...
+    def __init__(self):
+        super().__init__()
 
 class Plotter(Bisektion):
     def __init__(self, a, b, c, fa, fb, fc):
@@ -243,6 +266,11 @@ class Plotter(Bisektion):
 
 if __name__ == "__main__":
     bisektion = Bisektion()
-    bisektion.formula = "np.sqrt(self.n) - {x}" # Formula for root finding (e.g. "np.sqrt(self.n) - {x}" / "{x}**2 - self.n")
+    newton_raphson = Newton_Raphson()
+
+    bisektion.formula = "{x}**2 - self.n" # Formula for root finding (e.g. "np.sqrt(self.n) - {x}" / "{x}**2 - self.n")
     bisektion.accuracy = 0.001  # Desired accuracy (e.g. 1e-50 / 0.001)
+    newton_raphson.formula_derivative = "2 * {x}"  # Derivative of the formula (e.g. "2 * {x}")
+
     bisektion.main_loop()  # Start the bisection method
+    newton_raphson.main_loop()  # Start the Newton-Raphson method
