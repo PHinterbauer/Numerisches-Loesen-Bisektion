@@ -76,13 +76,13 @@ class Bisektion():
         """
         **calculate_fa**: Calculates the function value at a (fa).
         """
-        self.fa = eval(self.formula.format(x=self.a))  # Evaluate formula at a
+        self.fa = eval(self.formula.format(x=self.a, n=self.n))  # Evaluate formula at a
 
     def calculate_fb(self):
         """
         **calculate_fb**: Calculates the function value at b (fb).
         """
-        self.fb = eval(self.formula.format(x=self.b))  # Evaluate formula at b
+        self.fb = eval(self.formula.format(x=self.b, n=self.n))  # Evaluate formula at b
 
     def calculate_c(self):
         """
@@ -94,7 +94,7 @@ class Bisektion():
         """
         **calculate_fc**: Calculates the function value at c (fc).
         """
-        self.fc = eval(self.formula.format(x=self.c))  # Evaluate formula at c
+        self.fc = eval(self.formula.format(x=self.c, n=self.n))  # Evaluate formula at c
 
     def check_controll(self):
         """
@@ -231,17 +231,27 @@ class Newton_Raphson(Bisektion):
         Bisektion: Reuses the structure and methods of the bisection method.
 
     Attributes:
+        formula (str): Mathematical formula as a string.
         formula_derivative (str): The derivative of the mathematical formula as a string.
+        derivative (float): The derivative value at the current approximation (c).
     """
     def __init__(self):
         super().__init__()
-        self.formula_derivative: str = ""  # Derivative of the formula
-        self.derivative: float = 0.0  # Derivative value
+        self.formula: str = ""
+        self.formula_derivative: str = ""
+        self.derivative: float = 0.0
 
     def calculate_c(self):
         """
         **calculate_c**: Calculates the next approximation (c) using the Newton-Raphson formula.
         """
+        # Ensure c is not initialized to a value that causes the derivative to be zero
+        if self.c == 0:
+            if self.a == 0:
+                self.c = self.b
+            else:
+                self.c = self.a
+
         # Newton-Raphson formula: c = c - f(c) / f'(c)
         self.derivative = eval(self.formula_derivative.format(x=self.c))  # Evaluate derivative at c
         if self.derivative == 0:
@@ -268,9 +278,10 @@ if __name__ == "__main__":
     bisektion = Bisektion()
     newton_raphson = Newton_Raphson()
 
-    bisektion.formula = "{x}**2 - self.n" # Formula for root finding (e.g. "np.sqrt(self.n) - {x}" / "{x}**2 - self.n")
+    bisektion.formula = "{x}**2 - {n}" # Formula for root finding (e.g. "np.sqrt({n}) - {x}" / "{x}**2 - self.n")
     bisektion.accuracy = 0.001  # Desired accuracy (e.g. 1e-50 / 0.001)
+    newton_raphson.formula = bisektion.formula  # Use the same formula for Newton-Raphson
     newton_raphson.formula_derivative = "2 * {x}"  # Derivative of the formula (e.g. "2 * {x}")
 
-    bisektion.main_loop()  # Start the bisection method
+    # bisektion.main_loop()  # Start the bisection method
     newton_raphson.main_loop()  # Start the Newton-Raphson method
