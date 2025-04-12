@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 class Bisektion():
     """
@@ -34,7 +35,7 @@ class Bisektion():
         self.result: dict = {}
         self.formula: str = ""
         self.controll: bool = False
-        self.plot: bool = False
+        self.enable_plot: bool = False
         self.methods: list = ["bisektion", "newton_raphson", "regula_falsi"]
 
     def separator(self):
@@ -49,14 +50,14 @@ class Bisektion():
         """
         flag = True
         while flag:
-            plot = input("Do you want to plot the outcome? [y/n]: ").lower()  # Input for plotting
+            choice = input("Do you want to plot the outcome? [y/n]: ").lower()  # Input for plotting
             self.separator()  # Print separator
-            if plot in ["y", "yes", "n", "no"]:
-                if plot in ["y", "yes"]:
-                    self.plot = True # Set plot flag to True
+            if choice in ["y", "yes", "n", "no"]:
+                if choice in ["y", "yes"]:
+                    self.enable_plot = True # Set plot flag to True
                     flag = False
                 else:
-                    self.plot = False
+                    self.enable_plot = False
                     flag = False
             else:
                 print("Invalid selection! Please choose [y/n].")
@@ -71,13 +72,13 @@ class Bisektion():
         flag = True
         while flag:
             try:
-                method = int(input("Enter the number of the method: "))  # Input for method selection
+                choice = int(input("Enter the number of the method: "))  # Input for method selection
                 self.separator()  # Print separator
-                if method in [1, 2, 3]:
+                if choice in [1, 2, 3]:
                     self.get_plotter()
-                    eval(self.methods[method - 1] + ".main_loop()")  # Call the selected method's main loop
-                    if self.plot:
-                        eval("plotter.plot()")  # Call the plot method if selected
+                    eval(self.methods[choice - 1] + ".main_loop()")  # Call the selected method's main loop
+                    if self.enable_plot:
+                        plotter.plot()  # Call the plot method if selected
                     flag = False
                 else:
                     print("Invalid selection! Please choose 1, 2, or 3.")
@@ -203,6 +204,9 @@ class Bisektion():
         self.calculate_fc()  # Calculate fc
         self.check_controll()  # Check if interval is valid
 
+        if self.enable_plot:
+            plotter.update_data(iteration, self.fc, self.c, (self.a, self.b))  # Update plot data
+
         # Print initial iteration
         left_side_length, right_side_length, total_length = self.calc_separator(
             text_1=f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}',
@@ -226,6 +230,10 @@ class Bisektion():
             self.calculate_c()  # Update c
             self.calculate_fc()  # Update fc
             self.check_controll()  # Recheck interval validity
+
+            if self.enable_plot:
+                plotter.update_data(iteration, self.fc, self.c, (self.a, self.b))  # Update plot data
+
 
             # Print iterations
             left_side_length, right_side_length, total_length = self.calc_separator(
@@ -327,9 +335,122 @@ class Regula_Falsi(Bisektion):
             raise ValueError("Division by zero in Regula Falsi method.")
         self.c = self.b - (self.fb * (self.b - self.a)) / (self.fb - self.fa)
 
+# class Plotter(Bisektion):
+#     def __init__(self):
+#         super().__init__()
+#         self.iterations = []
+#         self.accuracies = []
+#         self.solutions = []
+#         self.intervals = []
+
+#     def update_data(self, iteration, accuracy, solution, interval):
+#         """
+#         Updates the data for plotting.
+#         """
+#         self.iterations.append(iteration)
+#         self.accuracies.append(accuracy)
+#         self.solutions.append(solution)
+#         self.intervals.append(interval)
+
+#     def plot(self):
+#         """
+#         Creates animated plots for Aufgabe 7.
+#         """
+#         fig, axes = plt.subplots(3, 1, figsize=(12, 12))  # Create 3 subplots
+#         ax1, ax2, ax3 = axes
+
+#         # Subplot 1: Interval shrinking visualization
+#         ax1.set_title("Interval Shrinking Over Iterations")
+#         ax1.set_xlabel("Iteration")
+#         ax1.set_ylabel("Interval Size")
+#         line1, = ax1.plot([], [], 'b-', label="Interval Size")
+#         ax1.legend()
+#         ax1.grid()
+
+#         # Subplot 2: Accuracy convergence
+#         ax2.set_title("Accuracy Convergence (|f(c)|)")
+#         ax2.set_xlabel("Iteration")
+#         ax2.set_ylabel("Accuracy (|f(c)|)")
+#         line2, = ax2.plot([], [], 'g-', label="Accuracy")
+#         ax2.legend()
+#         ax2.grid()
+
+#         # Subplot 3: Solution convergence
+#         ax3.set_title("Solution Convergence (c)")
+#         ax3.set_xlabel("Iteration")
+#         ax3.set_ylabel("Solution (c)")
+#         line3, = ax3.plot([], [], 'r-', label="Solution")
+#         ax3.legend()
+#         ax3.grid()
+
+#         # Data for animations
+#         interval_sizes = [abs(b - a) for a, b in self.intervals]
+
+#         def init():
+#             line1.set_data([], [])
+#             line2.set_data([], [])
+#             line3.set_data([], [])
+#             return line1, line2, line3
+
+#         def update(frame):
+#             x_data = self.iterations[:frame + 1]
+#             y1_data = interval_sizes[:frame + 1]
+#             y2_data = self.accuracies[:frame + 1]
+#             y3_data = self.solutions[:frame + 1]
+
+#             line1.set_data(x_data, y1_data)
+#             line2.set_data(x_data, y2_data)
+#             line3.set_data(x_data, y3_data)
+
+#             ax1.relim()
+#             ax1.autoscale_view()
+#             ax2.relim()
+#             ax2.autoscale_view()
+#             ax3.relim()
+#             ax3.autoscale_view()
+
+#             return line1, line2, line3
+
+#         # Create the animation with a slower interval (e.g., 500ms per frame)
+#         ani = animation.FuncAnimation(fig, update, frames=len(self.iterations), init_func=init, interval=500, repeat=False)
+
+#         plt.tight_layout()
+#         plt.show()
+
 class Plotter(Bisektion):
+    """
+    **Plotter**: Handles data collection and visualization for the root-finding process.
+
+    Inherits from:
+        Bisektion: Reuses the structure and methods of the bisection method.
+
+    Attributes:
+        iterations (list): Stores the iteration numbers.
+        accuracies (list): Stores the accuracy values (f(c)) for each iteration.
+        solutions (list): Stores the solution values (c) for each iteration.
+        intervals (list): Stores the interval bounds (a, b) for each iteration.
+    """
     def __init__(self):
         super().__init__()
+        self.iterations = []
+        self.accuracies = []
+        self.solutions = []
+        self.intervals = []
+
+    def update_data(self, iteration, accuracy, solution, interval):
+        """
+        **update_data**: Updates the data for plotting after each iteration.
+
+        Parameters:
+            iteration (int): The current iteration number.
+            accuracy (float): The accuracy value (f(c)) for the current iteration.
+            solution (float): The solution value (c) for the current iteration.
+            interval (tuple): The interval bounds (a, b) for the current iteration.
+        """
+        self.iterations.append(iteration)  # Append the iteration number
+        self.accuracies.append(accuracy)  # Append the accuracy value
+        self.solutions.append(solution)  # Append the solution value
+        self.intervals.append(interval)  # Append the interval bounds
 
 if __name__ == "__main__":
     bisektion = Bisektion()
@@ -350,3 +471,4 @@ if __name__ == "__main__":
     bisektion.start_method()  # Start the method selection process
 
 # write plotter class
+# -maybe- write gui class for options
