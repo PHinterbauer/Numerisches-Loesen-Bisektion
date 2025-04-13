@@ -1,45 +1,28 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import typing as tp
 
-class Bisektion():
+class Base:
     """
-    **Bisektion**: Implements the bisection method for root finding.
+    **Base**: A base class for common methods and attributes used.
 
     Attributes:
-        a (float): Start of interval.
-        b (float): End of interval.
-        c (float): Midpoint of interval.
-        n (float): Input number for the formula.
-        fa (float): Function value at a.
-        fb (float): Function value at b.
-        fc (float): Function value at c.
-        accuracy (float): Desired accuracy for the result.
-        controll_value (float): Product of fa and fb.
-        result (dict): Stores the final result.
-        formula (str): Mathematical formula as a string.
-        controll (bool): Indicates if the interval is valid.
-        enable_plot (bool): Indicates if plotting is enabled.
+        sep_length (int): Length of the separator line.
         methods (list): List of available methods for root finding.
+        enable_plot (bool): Indicates if plotting is enabled.
+        enable_zoom (bool): Indicates if automatic zooming is enabled for the main plot.
     """
-    def __init__(self, formula: str = "", accuracy: float = 0.0, fig: tp.Optional[plt.Figure] = None):
+    def __init__(self, formula: str = "", accuracy: float = 0.0, fig = None, a: float = 0.0, b: float = 0.0, n: float = 0.0, sep_length: int = 100):
         self.formula = formula
         self.accuracy = accuracy
         self.fig = fig
-        self.a: float = 0.0
-        self.b: float = 0.0
-        self.c: float = 0.0
-        self.n: float = 0.0
-        self.fa: float = 0.0
-        self.fb: float = 0.0
-        self.fc: float = 0.0
-        self.controll_value: float = 0.0
-        self.sep_length: int = 100
-        self.result: dict = {}
-        self.controll: bool = False
-        self.enable_plot: bool = False
+        self.a = a
+        self.b = b
+        self.n = n
+        self.sep_length = sep_length
         self.methods: list = ["bisektion", "newton_raphson", "regula_falsi"]
+        self.enable_plot: bool = False
+        self.enable_zoom: bool = False
 
     def separator(self):
         """
@@ -57,10 +40,10 @@ class Bisektion():
             self.separator()  # Print separator
             if choice in ["y", "yes", "n", "no"]:
                 if choice in ["y", "yes"]:
-                    plotter.enable_zoom = True # Set zoom flag to True
+                    self.enable_zoom = True # Set zoom flag to True
                     flag = False
                 else:
-                    plotter.enable_zoom = False # Set zoom flag to False
+                    self.enable_zoom = False # Set zoom flag to False
                     flag = False
             else:
                 print("Invalid selection! Please choose [y/n].")
@@ -149,6 +132,36 @@ class Bisektion():
             except ValueError:
                 print("Please enter a valid number!")  # Handle invalid input
                 continue
+
+class Bisektion(Base):
+    """
+    **Bisektion**: Implements the bisection method for root finding.
+
+    Attributes:
+        a (float): Start of interval.
+        b (float): End of interval.
+        c (float): Midpoint of interval.
+        n (float): Input number for the formula.
+        fa (float): Function value at a.
+        fb (float): Function value at b.
+        fc (float): Function value at c.
+        accuracy (float): Desired accuracy for the result.
+        controll_value (float): Product of fa and fb.
+        result (dict): Stores the final result.
+        formula (str): Mathematical formula as a string.
+        controll (bool): Indicates if the interval is valid.
+        enable_plot (bool): Indicates if plotting is enabled.
+        methods (list): List of available methods for root finding.
+    """
+    def __init__(self, formula="", accuracy=0.0, fig=plt.figure(figsize=(14, 8)), a=0.0, b=0.0, n=0.0, sep_length=100):
+        super().__init__(formula, accuracy, fig, a, b, n, sep_length)
+        self.c: float = 0.0
+        self.fa: float = 0.0
+        self.fb: float = 0.0
+        self.fc: float = 0.0
+        self.controll_value: float = 0.0
+        self.result: dict = {}
+        self.controll: bool = False
 
     def calculate_fa(self):
         """
@@ -317,8 +330,8 @@ class Newton_Raphson(Bisektion):
         formula_derivative (str): The derivative of the mathematical formula as a string.
         derivative (float): The derivative value at the current approximation (c).
     """
-    def __init__(self, formula, accuracy, fig):
-        super().__init__(formula, accuracy, fig)
+    def __init__(self, formula="", accuracy=0.0, fig=None, a=0.0, b=0.0, n=0.0, sep_length=100):
+        super().__init__(formula, accuracy, fig, a, b, n, sep_length)
         self.formula_derivative: str = ""
         self.derivative: float = 0.0
 
@@ -346,8 +359,8 @@ class Regula_Falsi(Bisektion):
     Inherits from:
         Bisektion: Reuses the structure and methods of the bisection method.
     """
-    def __init__(self, formula, accuracy, fig):
-        super().__init__(formula, accuracy, fig)
+    def __init__(self, formula="", accuracy=0.0, fig=None, a=0.0, b=0.0, n=0.0, sep_length=100):
+        super().__init__(formula, accuracy, fig, a, b, n, sep_length)
 
     def calculate_c(self):
         """
@@ -358,7 +371,7 @@ class Regula_Falsi(Bisektion):
             raise ValueError("Division by zero in Regula Falsi method.")
         self.c = self.b - (self.fb * (self.b - self.a)) / (self.fb - self.fa)
 
-class Plotter(Bisektion):
+class Plotter(Base):
     """
     **Plotter**: Handles the visualization of the root-finding process.
 
@@ -374,8 +387,8 @@ class Plotter(Bisektion):
         enable_zoom (bool): Indicates if automatic zooming is enabled for the main plot.
         fig (matplotlib.figure.Figure): The figure object for the plot.
     """
-    def __init__(self, formula, accuracy, fig):
-        super().__init__(formula, accuracy, fig)
+    def __init__(self, formula="", accuracy=0.0, fig=None, a=0.0, b=0.0, n=0.0, sep_length=100):
+        super().__init__(formula, accuracy, fig, a, b, n, sep_length)
         self.a_list: list = []
         self.b_list: list = []
         self.c_list: list = []
@@ -512,8 +525,9 @@ class Plotter(Bisektion):
 if __name__ == "__main__":
     formula = "{x}**2 - {n}" # Formula for root finding (e.g. "np.sqrt({n}) - {x}" / "{x}**2 - self.n")
     accuracy = 0.001  # Desired accuracy (e.g. 1e-50 / 0.001)
-    fig = plt.figure(figsize=(14, 8))
+    fig = plt.figure(figsize=(14, 8)) # Create a figure for plotting
 
+    base = Base(formula, accuracy, fig)
     bisektion = Bisektion(formula, accuracy, fig)
     newton_raphson = Newton_Raphson(formula, accuracy, fig)
     regula_falsi = Regula_Falsi(formula, accuracy, fig)
@@ -521,8 +535,9 @@ if __name__ == "__main__":
 
     newton_raphson.formula_derivative = "2 * {x}"  # Derivative of the formula (e.g. "2 * {x}")
 
-    bisektion.start_method()  # Start the method selection process
+    base.start_method()  # Start the method selection process
 
 # update class docstrings 
 # move input methods and separator method in extra Class as parent of all classes 
 # change call of start_method to use the new class
+# nonetype object has no attribute canvas - creates new fig dor every class initialization
