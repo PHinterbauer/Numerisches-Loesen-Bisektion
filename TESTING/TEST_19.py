@@ -8,24 +8,25 @@ def f(x):
 
 # Bisection method
 def bisektion_schritte(a, b, tol=0.001):
-    a_vals, b_vals, c_vals, fc_vals = [], [], [], []
+    a_vals, b_vals, c_vals, fc_vals, y_vals = [], [], [], [], [] # added y_vals
     while (b - a) / 2.0 > tol:
         c = (a + b) / 2.0
         a_vals.append(a)
         b_vals.append(b)
         c_vals.append(c)
         fc_vals.append(f(c))
+        y_vals.append(f(c)) #calculate y value within bisection loop
         if f(c) == 0:
             break
         elif f(a) * f(c) < 0:
             b = c
         else:
             a = c
-    return a_vals, b_vals, c_vals, fc_vals
+    return a_vals, b_vals, c_vals, fc_vals, y_vals #return y_vals
 
 class Plotter:
-    def __init__(self, a_vals, b_vals, c_vals, fc_vals):
-        self.a_vals, self.b_vals, self.c_vals, self.fc_vals = a_vals, b_vals, c_vals, fc_vals
+    def __init__(self, a_vals, b_vals, c_vals, fc_vals, y_vals): #add y_vals
+        self.a_vals, self.b_vals, self.c_vals, self.fc_vals, self.y_vals = a_vals, b_vals, c_vals, fc_vals, y_vals #add y_vals
         self.log_fc_vals = np.abs(fc_vals) + 1e-10  # Avoid log(0)
         self.x_dense = np.linspace(-2, 30, 500)
         self.y_dense = f(self.x_dense)
@@ -81,12 +82,10 @@ class Plotter:
         # Update Subplot 1
         a_n, b_n, c_n = self.a_vals[frame], self.b_vals[frame], self.c_vals[frame]
         c_slice = self.c_vals[:frame+1]
-        y_slice = [f(c) for c in c_slice]
+        y_slice = self.y_vals[:frame+1] #get from precalculated list
         self.point_cn.set_data(c_slice, y_slice)
         self.vline_a.set_xdata([a_n])  # Wrap in a list to make it a sequence
         self.vline_b.set_xdata([b_n])  # Wrap in a list to make it a sequence
-        margin = (b_n - a_n) * 0.05
-        self.ax1.set_xlim(a_n - margin, b_n + margin)
 
         y_min, y_max = self.ax1.get_ylim()
 
@@ -117,6 +116,6 @@ class Plotter:
 
 # Main execution
 if __name__ == "__main__":
-    a_vals, b_vals, c_vals, fc_vals = bisektion_schritte(0, 28)
-    plotter = Plotter(a_vals, b_vals, c_vals, fc_vals)
+    a_vals, b_vals, c_vals, fc_vals, y_vals = bisektion_schritte(0, 28) #get y_vals
+    plotter = Plotter(a_vals, b_vals, c_vals, fc_vals, y_vals) #pass y_vals
     plotter.animate()

@@ -29,10 +29,12 @@ class Plotter:
         self.log_fc_vals = np.abs(fc_vals) + 1e-10  # Avoid log(0)
         self.x_dense = np.linspace(-2, 30, 500)
         self.y_dense = f(self.x_dense)
+        self.c_point_y_list = [] #store c y values
 
         # Create figure and subplots
         self.fig = plt.figure(figsize=(14, 8))
         self._setup_subplots()
+        self._calculate_y_values() #calculate y values
 
     def _setup_subplots(self):
         # Subplot 1: Function and bisection points
@@ -72,6 +74,9 @@ class Plotter:
         # Store text objects for iteration numbers
         self.texts = []
 
+    def _calculate_y_values(self):
+        self.c_point_y_list = [f(c) for c in self.c_vals]
+
     def update(self, frame):
         # Clear previous iteration numbers
         for text in self.texts:
@@ -81,12 +86,10 @@ class Plotter:
         # Update Subplot 1
         a_n, b_n, c_n = self.a_vals[frame], self.b_vals[frame], self.c_vals[frame]
         c_slice = self.c_vals[:frame+1]
-        y_slice = [f(c) for c in c_slice]
+        y_slice = self.c_point_y_list[:frame+1] #get from the calculated y values
         self.point_cn.set_data(c_slice, y_slice)
         self.vline_a.set_xdata([a_n])  # Wrap in a list to make it a sequence
         self.vline_b.set_xdata([b_n])  # Wrap in a list to make it a sequence
-        margin = (b_n - a_n) * 0.05
-        self.ax1.set_xlim(a_n - margin, b_n + margin)
 
         y_min, y_max = self.ax1.get_ylim()
 

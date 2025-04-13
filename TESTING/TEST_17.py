@@ -81,12 +81,11 @@ class Plotter:
         # Update Subplot 1
         a_n, b_n, c_n = self.a_vals[frame], self.b_vals[frame], self.c_vals[frame]
         c_slice = self.c_vals[:frame+1]
-        y_slice = [f(c) for c in c_slice]
+        #Correct use of format.
+        y_slice = [eval(f"{c}**2 - 28") for c in c_slice]
         self.point_cn.set_data(c_slice, y_slice)
         self.vline_a.set_xdata([a_n])  # Wrap in a list to make it a sequence
         self.vline_b.set_xdata([b_n])  # Wrap in a list to make it a sequence
-        margin = (b_n - a_n) * 0.05
-        self.ax1.set_xlim(a_n - margin, b_n + margin)
 
         y_min, y_max = self.ax1.get_ylim()
 
@@ -100,7 +99,7 @@ class Plotter:
         log_fc_slice = self.log_fc_vals[:frame+1]
         self.line_log_fc.set_data(range(len(log_fc_slice)), log_fc_slice)
         self.ax2.set_xlim(0, len(self.log_fc_vals))
-        self.ax2.set_ylim(min(self.log_fc_vals) * 0.9, max(self.log_fc_vals) * 1.1)
+        self.ax2.set_ylim(max(min(log_fc_slice), 1e-10), max(log_fc_slice) * 1.1)
 
         # Update Subplot 3
         fc_slice = self.fc_vals[:frame+1]

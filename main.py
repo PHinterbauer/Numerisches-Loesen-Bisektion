@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import typing as tp
 
 class Bisektion():
     """
@@ -19,9 +20,13 @@ class Bisektion():
         result (dict): Stores the final result.
         formula (str): Mathematical formula as a string.
         controll (bool): Indicates if the interval is valid.
+        enable_plot (bool): Indicates if plotting is enabled.
         methods (list): List of available methods for root finding.
     """
-    def __init__(self, formula: str = "", accuracy: float = 0.0):
+    def __init__(self, formula: str = "", accuracy: float = 0.0, fig: tp.Optional[plt.Figure] = None):
+        self.formula = formula
+        self.accuracy = accuracy
+        self.fig = fig
         self.a: float = 0.0
         self.b: float = 0.0
         self.c: float = 0.0
@@ -29,14 +34,11 @@ class Bisektion():
         self.fa: float = 0.0
         self.fb: float = 0.0
         self.fc: float = 0.0
-        self.accuracy = accuracy
         self.controll_value: float = 0.0
-        self.sep_length: int = 50
+        self.sep_length: int = 100
         self.result: dict = {}
-        self.formula = formula
         self.controll: bool = False
         self.enable_plot: bool = False
-        self.enable_zoom: bool = False
         self.methods: list = ["bisektion", "newton_raphson", "regula_falsi"]
 
     def separator(self):
@@ -55,10 +57,10 @@ class Bisektion():
             self.separator()  # Print separator
             if choice in ["y", "yes", "n", "no"]:
                 if choice in ["y", "yes"]:
-                    self.enable_zoom = True # Set zoom flag to True
+                    plotter.enable_zoom = True # Set zoom flag to True
                     flag = False
                 else:
-                    self.enable_zoom = False # Set zoom flag to False
+                    plotter.enable_zoom = False # Set zoom flag to False
                     flag = False
             else:
                 print("Invalid selection! Please choose [y/n].")
@@ -86,7 +88,7 @@ class Bisektion():
 
     def start_method(self):
         """
-        **get_method**: Prompts the user to select a method for root finding.
+        **start_method**: Prompts the user to select a method for root finding and starts the main loop.
         """
         self.separator()  # Print separator
         print("Select the method:\n1. Bisection\n2. Newton-Raphson\n3. Regula Falsi")
@@ -226,7 +228,8 @@ class Bisektion():
         self.check_controll()  # Check if interval is valid
 
         if self.enable_plot:
-            plotter.update_data()  # Update plot data
+            plotter.initialize_plot(self.a, self.b, self.n)  # Initialize plot
+            plotter.update_data(self.a, self.b, self.c, self.fc)  # Update plot data
 
         # Print initial iteration
         left_side_length, right_side_length, total_length = self.calc_separator(
@@ -253,7 +256,7 @@ class Bisektion():
             self.check_controll()  # Recheck interval validity
 
             if self.enable_plot:
-                plotter.update_data()  # Update plot data
+                plotter.update_data(self.a, self.b, self.c, self.fc)  # Update plot data
 
             # Print iterations
             left_side_length, right_side_length, total_length = self.calc_separator(
@@ -314,8 +317,8 @@ class Newton_Raphson(Bisektion):
         formula_derivative (str): The derivative of the mathematical formula as a string.
         derivative (float): The derivative value at the current approximation (c).
     """
-    def __init__(self, formula: str = "", accuracy: float = 0.0):
-        super().__init__(formula=formula, accuracy=accuracy)
+    def __init__(self, formula, accuracy, fig):
+        super().__init__(formula, accuracy, fig)
         self.formula_derivative: str = ""
         self.derivative: float = 0.0
 
@@ -343,8 +346,8 @@ class Regula_Falsi(Bisektion):
     Inherits from:
         Bisektion: Reuses the structure and methods of the bisection method.
     """
-    def __init__(self, formula: str = "", accuracy: float = 0.0):
-        super().__init__(formula=formula, accuracy=accuracy)
+    def __init__(self, formula, accuracy, fig):
+        super().__init__(formula, accuracy, fig)
 
     def calculate_c(self):
         """
@@ -356,20 +359,46 @@ class Regula_Falsi(Bisektion):
         self.c = self.b - (self.fb * (self.b - self.a)) / (self.fb - self.fa)
 
 class Plotter(Bisektion):
-    def __init__(self):
-        super().__init__()
+    """
+    **Plotter**: Handles the visualization of the root-finding process.
+
+    Inherits from:
+        Bisektion: Reuses the structure and methods of the bisection method.
+
+    Attributes:
+        a_list (list): Stores the 'a' values for each iteration.
+        b_list (list): Stores the 'b' values for each iteration.
+        c_list (list): Stores the 'c' values (approximations) for each iteration.
+        fc_list (list): Stores the function values at 'c' (f(c)) for each iteration.
+        c_points_text_str_list (list): Stores the text annotations for 'c' points on the plot.
+        enable_zoom (bool): Indicates if automatic zooming is enabled for the main plot.
+        fig (matplotlib.figure.Figure): The figure object for the plot.
+    """
+    def __init__(self, formula, accuracy, fig):
+        super().__init__(formula, accuracy, fig)
         self.a_list: list = []
         self.b_list: list = []
         self.c_list: list = []
         self.fc_list: list = []
         self.c_points_text_str_list: list = []
+        self.enable_zoom: bool = False
 
-    def initialize_plot(self):
-        self.fig = plt.figure(figsize=(14, 8))
-        self.fig.canvas.manager.set_window_title("Nullstellenberechnung durch Iterative-Verfahren")  # Set the figure's window title
-        self.x_func_line = np.linspace(self.a, self.b, 500) # Generate x values for plotting the function line
-        self.y_func_line = [eval(self.formula.format(x=x, n=self.n)) for x in self.x_func_line]  # Generate y values using the formula for plotting the function line
+    def initialize_plot(self, a, b, n):
+        """
+        **initialize_plot**: Sets up the initial plot for the root-finding process.
 
+        Parameters:
+            a (float): Start of the interval.
+            b (float): End of the interval.
+            n (float): Input number for the formula.
+        """
+        self.fig.canvas.manager.set_window_title("Nullstellenberechnung durch Iterative-Verfahren")
+
+        # Generate x and y values for the function line
+        self.x_func_line = np.linspace(a, b, 500)
+        self.y_func_line = [eval(self.formula.format(x=x, n=n)) for x in self.x_func_line]
+
+        # Main plot for root approximation
         self.approach_to_root = self.fig.add_subplot(2, 1, 1)
         self.func_line_list, = self.approach_to_root.plot(self.x_func_line, self.y_func_line, label=self.formula, color="blue")
         self.c_point_list, = self.approach_to_root.plot([], [], "ro", label="Geschätzte Nullstelle")
@@ -382,8 +411,9 @@ class Plotter(Bisektion):
         self.approach_to_root.grid(True)
         self.approach_to_root.legend(loc="upper left")
 
+        # Logarithmic plot for |f(c)| per iteration
         self.fc_per_iter_logplot = self.fig.add_subplot(2, 2, 3)
-        self.fc_per_iter_logplot_line_list, = self.fc_per_iter_logplot.plot([], [], "go-", label="|f(c)|") # Initialize with a small value to always get positive values for log
+        self.fc_per_iter_logplot_line_list, = self.fc_per_iter_logplot.plot([0], [1e-100], "go-", label="|f(c)|")
         self.fc_per_iter_logplot.axhline(0, color="gray", linestyle="--")
         self.fc_per_iter_logplot.set_title("|f(c)| pro Iteration (Logarithmisch)")
         self.fc_per_iter_logplot.set_xlabel("Iteration")
@@ -392,6 +422,7 @@ class Plotter(Bisektion):
         self.fc_per_iter_logplot.grid(True)
         self.fc_per_iter_logplot.legend(loc="upper right")
 
+        # Linear plot for f(c) per iteration
         self.fc_per_iter = self.fig.add_subplot(2, 2, 4)
         self.fc_per_iter_line_list, = self.fc_per_iter.plot([], [], "go-", label="f(c)")
         self.fc_per_iter.axhline(0, color="gray", linestyle="--")
@@ -400,76 +431,98 @@ class Plotter(Bisektion):
         self.fc_per_iter.set_ylabel("f(c)")
         self.fc_per_iter.grid(True)
         self.fc_per_iter.legend(loc="upper right")
-        
-    def update_data(self):
-        self.a_list.append(self.a)
-        self.b_list.append(self.b)
-        self.c_list.append(self.c)
-        self.fc_list.append(self.fc)
+
+    def update_data(self, a, b, c, fc):
+        """
+        **update_data**: Updates the data lists with new values for each iteration.
+
+        Parameters:
+            a (float): Current 'a' value.
+            b (float): Current 'b' value.
+            c (float): Current 'c' value (approximation).
+            fc (float): Current function value at 'c' (f(c)).
+        """
+        self.a_list.append(a)
+        self.b_list.append(b)
+        self.c_list.append(c)
+        self.fc_list.append(fc)
 
     def update_plot(self, frame):
+        """
+        **update_plot**: Updates the plot for each frame during the animation.
+
+        Parameters:
+            frame (int): The current frame number in the animation.
+
+        Returns:
+            Updated plot elements.
+        """
+        # Clear previous text annotations
         for text_str in self.c_points_text_str_list:
             text_str.remove()
         self.c_points_text_str_list.clear()
 
+        # Update 'a' and 'b' lines aswell as 'c' points
         a_iter = self.a_list[frame]
         b_iter = self.b_list[frame]
-        c_iter = self.c_list[frame]
-        fc_iter = self.fc_list[frame]
-        self.c_point_list.set_data([c_iter], [fc_iter]) # possible error
+        c_point_x_list = self.c_list[:frame + 1]
+        c_point_y_list = self.fc_list[:frame + 1]
+        self.c_point_list.set_data(c_point_x_list, c_point_y_list)
         self.a_vertical_line.set_xdata([a_iter])
         self.b_vertical_line.set_xdata([b_iter])
 
+        # Adjust zoom if enabled
         if self.enable_zoom:
-            approach_to_root_min_width = a_iter - b_iter
-            approach_to_root_zoom = approach_to_root_min_width * 0.05
+            approach_to_root_min_width = abs(a_iter - b_iter) # Calculate the width of the interval
+            approach_to_root_zoom = approach_to_root_min_width * 0.05 # Add a small margin for zooming
             self.approach_to_root.set_xlim(a_iter - approach_to_root_zoom, b_iter + approach_to_root_zoom)
 
-        for iter in range(frame + 1):
-            c_point_text_x_iter = self.c_list[iter]
-            c_point_text_y_iter = self.fc_list[iter]
-            c_point_text_str_iter = self.approach_to_root.text(c_point_text_x_iter, c_point_text_y_iter + 20, str(iter), color="red", fontsize=8, ha='center')
+        # Add text annotations for 'c' points
+        c_point_text_y_min, c_point_text_y_max = self.approach_to_root.get_ylim()
+        c_point_text_y_offset = (c_point_text_y_max - c_point_text_y_min) * 0.05 # Offset for text placement
+        for iter in range(len(c_point_x_list)):
+            c_point_text_x_iter = c_point_x_list[iter]
+            c_point_text_y_iter = c_point_y_list[iter]
+            c_point_text_str_iter = self.approach_to_root.text(
+                c_point_text_x_iter, c_point_text_y_iter + c_point_text_y_offset, str(iter + 1), color="red", fontsize=8, ha="center"
+            )
             self.c_points_text_str_list.append(c_point_text_str_iter)
 
-        self.fc_per_iter_logplot_line_list.set_data(range(frame + 1), self.fc_list[:frame + 1])
-        self.fc_per_iter_logplot.set_xlim(0, frame + 1)
-        safe_fc_vals = np.abs(self.fc_list) + 1e-10  # Avoid log(0) by adding a small value
-        self.fc_per_iter_logplot.set_ylim(min(safe_fc_vals) * 0.9, max(safe_fc_vals) * 1.1)
+        # Update logarithmic plot for |f(c)|
+        log_fc_list = np.abs(self.fc_list[:frame + 1]) + 1e-10  # Take absolute values of f(c) up to the current frame and add a small offset to avoid log(0)
+        self.fc_per_iter_logplot_line_list.set_data(range(1, frame + 2), log_fc_list) # Use range(1, frame + 2) to match iteration numbers (1-based indexing)
+        self.fc_per_iter_logplot.set_xlim(1, len(self.c_list) + 1) # Set x-axis limits to match the number of iterations
+        self.fc_per_iter_logplot.set_ylim(min(log_fc_list) * 0.9, max(log_fc_list) * 1.1) # Adjust y-axis limits with a small margin for better visualization
 
-        self.fc_per_iter_line_list.set_data(range(frame + 1), self.fc_list[:frame + 1])
-        self.fc_per_iter.set_xlim(0, frame + 1)
-        ymin = min(self.fc_list)
-        ymax = max(self.fc_list)
-        if abs(ymax - ymin) < 1e-8:
-            ymin -= 1
-            ymax += 1
-        self.fc_per_iter.set_ylim(ymin, ymax)
-        self.fc_per_iter.set_ylim(ymin * 1.1, ymax * 1.1)
+        # Update linear plot for f(c)
+        self.fc_per_iter_line_list.set_data(range(1, frame + 2), self.fc_list[:frame + 1]) # Include all f(c) values up to the current frame
+        self.fc_per_iter.set_xlim(1, len(self.c_list) + 1) # Set x-axis limits to match the number of iterations
+        self.fc_per_iter.set_ylim(min(self.fc_list) * 1.5, max(self.fc_list) * 1.1) # Adjust y-axis limits with a margin to ensure all points are visible
 
         return self.c_point_list, self.a_vertical_line, self.b_vertical_line, self.fc_per_iter_logplot_line_list, self.fc_per_iter_line_list
 
     def plot(self):
-        self.initialize_plot()
+        """
+        **plot**: Creates and displays the animation for the root-finding process.
+        """
         fig_anim = animation.FuncAnimation(self.fig, self.update_plot, frames=len(self.c_list), interval=1000, repeat=False)
-        plt.tight_layout()
+        plt.tight_layout() # Adjust the layout to prevent overlapping
         plt.show()
 
 if __name__ == "__main__":
-    bisektion = Bisektion()
-    newton_raphson = Newton_Raphson()
-    regula_falsi = Regula_Falsi()
-    plotter = Plotter()
+    formula = "{x}**2 - {n}" # Formula for root finding (e.g. "np.sqrt({n}) - {x}" / "{x}**2 - self.n")
+    accuracy = 0.001  # Desired accuracy (e.g. 1e-50 / 0.001)
+    fig = plt.figure(figsize=(14, 8))
 
-    bisektion.formula = "{x}**2 - {n}" # Formula for root finding (e.g. "np.sqrt({n}) - {x}" / "{x}**2 - self.n")
-    plotter.formula = bisektion.formula # Set formula for plotter
+    bisektion = Bisektion(formula, accuracy, fig)
+    newton_raphson = Newton_Raphson(formula, accuracy, fig)
+    regula_falsi = Regula_Falsi(formula, accuracy, fig)
+    plotter = Plotter(formula, accuracy, fig)
 
     newton_raphson.formula_derivative = "2 * {x}"  # Derivative of the formula (e.g. "2 * {x}")
 
-    bisektion.accuracy = 0.001  # Desired accuracy (e.g. 1e-50 / 0.001)
-
     bisektion.start_method()  # Start the method selection process
 
-# write plotter class from TEST_16.py
-# fix no positive values for log warning
-# add comments and docstrings to every function that is missing them
-# -maybe- write gui class for options
+# update class docstrings 
+# move input methods and separator method in extra Class as parent of all classes 
+# change call of start_method to use the new class
