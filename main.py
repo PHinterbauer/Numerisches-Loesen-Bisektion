@@ -541,3 +541,5 @@ if __name__ == "__main__":
 # move input methods and separator method in extra Class as parent of all classes 
 # change call of start_method to use the new class
 # nonetype object has no attribute canvas - creates new fig dor every class initialization
+# explain comma in initilization of plotter
+# rewrite classes and attributes to be inherited correctly
