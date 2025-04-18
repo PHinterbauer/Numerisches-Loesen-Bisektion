@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-class Base:
+class Base():
     def __init__(self, 
                 formula: str,
                 accuracy: float,
@@ -10,7 +10,6 @@ class Base:
                 b: float = 0.0, 
                 n: float = 0.0, 
                 sep_length: int = 100, 
-                fig = plt.figure(figsize=(14, 8)), 
                 methods: list = ["bisektion", "newton_raphson", "regula_falsi"], 
                 enable_plot: bool = False, 
                 enable_zoom: bool = False):
@@ -20,7 +19,6 @@ class Base:
         self.b = b
         self.n = n
         self.sep_length = sep_length
-        self.fig = fig
         self.methods = methods
         self.enable_plot = enable_plot
         self.enable_zoom = enable_zoom
@@ -73,6 +71,7 @@ class Base:
                     self.get_plotter()
                     eval(self.methods[choice - 1] + ".main_loop()")
                     if self.enable_plot:
+                        # plotter.update_data(eval(self.methods[choice -1]).a, eval(self.methods[choice -1]).b, eval(self.methods[choice -1]).c, eval(self.methods[choice -1]).fc, self.n)
                         plotter.plot()
                     flag = False
                 else:
@@ -121,7 +120,6 @@ class BaseCalculations(Base):
             b: float = 0.0, 
             n: float = 0.0, 
             sep_length: int = 100, 
-            fig = plt.figure(figsize=(14, 8)), 
             methods: list = ["bisektion", "newton_raphson", "regula_falsi"], 
             enable_plot: bool = False, 
             enable_zoom: bool = False, 
@@ -129,17 +127,17 @@ class BaseCalculations(Base):
             fa: float = 0.0, 
             fb: float = 0.0, 
             fc: float = 0.0, 
-            controll_value: float = 0.0,
+            control_value: float = 0.0,
             result: dict = {},
-            controll: bool = False):
-        super().__init__(formula, accuracy, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom)
+            control: bool = False):
+        super().__init__(formula, accuracy, a, b, n, sep_length, methods, enable_plot, enable_zoom)
         self.c = c
         self.fa = fa
         self.fb = fb
         self.fc = fc
-        self.controll_value = controll_value
+        self.control_value = control_value
         self.result = result
-        self.controll = controll
+        self.control = control
 
     def calculate_fa(self):
         self.fa = eval(self.formula.format(x=self.a, n=self.n))
@@ -153,9 +151,9 @@ class BaseCalculations(Base):
     def calculate_fc(self):
         self.fc = eval(self.formula.format(x=self.c, n=self.n))
 
-    def check_controll(self):
-        self.controll_value = self.fa * self.fb
-        self.controll = self.controll_value < 0
+    def check_control(self):
+        self.control_value = self.fa * self.fb
+        self.control = self.control_value < 0
 
     def switch_interval(self):
         if self.fa * self.fc < 0:
@@ -182,47 +180,46 @@ class BaseCalculations(Base):
         self.calculate_fb()
         self.calculate_c()
         self.calculate_fc()
-        self.check_controll()
+        self.check_control()
 
         if self.enable_plot:
-            plotter.initialize_plot(self.a, self.b, self.n)
-            plotter.update_data(self.a, self.b, self.c, self.fc)
+            plotter.update_data(self.a, self.b, self.c, self.fc, self.n)
 
         left_side_length, right_side_length, total_length = self.calc_separator(
             text_1=f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}',
             text_2=f'a: {self.a}, b: {self.b}, c: {self.c}',
-            text_3=f'controll: {self.controll}, controll value: {self.controll_value}',
+            text_3=f'control: {self.control}, control value: {self.control_value}',
             header=f' Iteration: {iteration} '
         )
         print("=" * left_side_length, "Iteration: {iteration}".format(iteration=iteration), "=" * right_side_length)
         print(f'a: {self.a}, b: {self.b}, c: {self.c}')
         print(f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}')
-        print(f'controll: {self.controll}, controll value: {self.controll_value}')
+        print(f'control: {self.control}, control value: {self.control_value}')
         print("=" * total_length)
 
         self.switch_interval()
 
-        while np.floor(abs(self.fc) * 10 ** (abs(int(np.log10(self.accuracy))) - 1)) != 0 and self.controll:
+        while np.floor(abs(self.fc) * 10 ** (abs(int(np.log10(self.accuracy))) - 1)) != 0 and self.control:
             iteration += 1
             self.calculate_fa()
             self.calculate_fb()
             self.calculate_c()
             self.calculate_fc()
-            self.check_controll()
+            self.check_control()
 
             if self.enable_plot:
-                plotter.update_data(self.a, self.b, self.c, self.fc)
+                plotter.update_data(self.a, self.b, self.c, self.fc, self.n)
 
             left_side_length, right_side_length, total_length = self.calc_separator(
                 text_1=f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}',
                 text_2=f'a: {self.a}, b: {self.b}, c: {self.c}',
-                text_3=f'controll: {self.controll}, controll value: {self.controll_value}',
+                text_3=f'control: {self.control}, control value: {self.control_value}',
                 header=f' Iteration: {iteration} '
             )
             print("=" * left_side_length, "Iteration: {iteration}".format(iteration=iteration), "=" * right_side_length)
             print(f'a: {self.a}, b: {self.b}, c: {self.c}')
             print(f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}')
-            print(f'controll: {self.controll}, controll value: {self.controll_value}')
+            print(f'control: {self.control}, control value: {self.control_value}')
             print("=" * total_length)
 
             self.switch_interval()
@@ -237,7 +234,7 @@ class BaseCalculations(Base):
                 self.c = self.b
                 break
 
-        if not self.controll:
+        if not self.control:
             print("No solution found!")
         else:
             self.result["c"] = self.c
@@ -264,7 +261,6 @@ class Bisektion(BaseCalculations):
             b = 0.0, 
             n = 0.0, 
             sep_length = 100, 
-            fig = plt.figure(figsize=(14, 8)),
             methods = ["bisektion", "newton_raphson", "regula_falsi"],
             enable_plot = False, 
             enable_zoom = False, 
@@ -272,10 +268,10 @@ class Bisektion(BaseCalculations):
             fa = 0.0, 
             fb = 0.0, 
             fc = 0.0, 
-            controll_value = 0.0,
+            control_value = 0.0,
             result = {},
-            controll = False):
-        super().__init__(formula, accuracy, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom, c, fa, fb, fc, controll_value, result, controll)
+            control = False):
+        super().__init__(formula, accuracy, a, b, n, sep_length, methods, enable_plot, enable_zoom, c, fa, fb, fc, control_value, result, control)
 
     def calculate_c(self):
         self.c = (self.a + self.b) / 2
@@ -289,7 +285,6 @@ class NewtonRaphson(BaseCalculations):
             b: float = 0.0, 
             n: float = 0.0, 
             sep_length: int = 100, 
-            fig = plt.figure(figsize=(14, 8)),
             methods: list = ["bisektion", "newton_raphson", "regula_falsi"],
             enable_plot: bool = False, 
             enable_zoom: bool = False, 
@@ -297,11 +292,11 @@ class NewtonRaphson(BaseCalculations):
             fa: float = 0.0, 
             fb: float = 0.0, 
             fc: float = 0.0, 
-            controll_value: float = 0.0,
+            control_value: float = 0.0,
             result: dict = {},
-            controll: bool = False,
+            control: bool = False,
             c_derivative: float = 0.0):
-        super().__init__(formula, accuracy, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom, c, fa, fb, fc, controll_value, result, controll)
+        super().__init__(formula, accuracy, a, b, n, sep_length, methods, enable_plot, enable_zoom, c, fa, fb, fc, control_value, result, control)
         self.formula_derivative = formula_derivative
         self.c_derivative = c_derivative
 
@@ -317,7 +312,6 @@ class RegulaFalsi(BaseCalculations):
             b = 0.0, 
             n = 0.0, 
             sep_length = 100, 
-            fig = plt.figure(figsize=(14, 8)),
             methods = ["bisektion", "newton_raphson", "regula_falsi"],
             enable_plot = False, 
             enable_zoom = False, 
@@ -325,10 +319,10 @@ class RegulaFalsi(BaseCalculations):
             fa = 0.0, 
             fb = 0.0, 
             fc = 0.0, 
-            controll_value = 0.0,
+            control_value = 0.0,
             result = {},
-            controll = False):
-        super().__init__(formula, accuracy, fig, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom, c, fa, fb, fc, controll_value, result, controll)
+            control = False):
+        super().__init__(formula, accuracy, a, b, n, sep_length, methods, enable_plot, enable_zoom, c, fa, fb, fc, control_value, result, control)
 
     def calculate_c(self):
         self.c = (self.a * self.fb - self.b * self.fa) / (self.fb - self.fa)
@@ -341,7 +335,6 @@ class Plotter(Base):
             b: float = 0.0, 
             n: float = 0.0, 
             sep_length: int = 100, 
-            fig = plt.figure(figsize=(14, 8)),
             methods: list = ["bisektion", "newton_raphson", "regula_falsi"],
             enable_plot: bool = False, 
             enable_zoom: bool = False,
@@ -350,7 +343,7 @@ class Plotter(Base):
             c_list: list = [],
             fc_list: list = [],
             c_points_text_str_list: list = []):
-        super().__init__(formula, accuracy, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom)
+        super().__init__(formula, accuracy, a, b, n, sep_length, methods, enable_plot, enable_zoom)
         self.a_list = a_list
         self.b_list = b_list
         self.c_list = c_list
@@ -358,6 +351,7 @@ class Plotter(Base):
         self.c_points_text_str_list = c_points_text_str_list
 
     def initialize_plot(self, a, b, n):
+        self.fig = plt.figure(figsize=(14, 8))
         self.fig.canvas.manager.set_window_title("Nullstellenberechnung durch Iterative-Verfahren")
 
         self.x_func_line = np.linspace(a, b, 500)
@@ -394,9 +388,12 @@ class Plotter(Base):
         self.fc_per_iter.grid(True)
         self.fc_per_iter.legend(loc="upper right")
 
-    def update_data(self, a, b, c, fc):
-        self.a_list.append(a)
-        self.b_list.append(b)
+    def update_data(self, a, b, c, fc, n):
+        self.a = a
+        self.b = b
+        self.n = n
+        self.a_list.append(self.a)
+        self.b_list.append(self.b)
         self.c_list.append(c)
         self.fc_list.append(fc)
 
@@ -441,6 +438,7 @@ class Plotter(Base):
         return self.c_point_list, self.a_vertical_line, self.b_vertical_line, self.fc_per_iter_logplot_line_list, self.fc_per_iter_line_list
 
     def plot(self):
+        self.initialize_plot(self.a, self.b, self.n)
         anim1 = animation.FuncAnimation(self.fig, self.update_plot, frames=len(self.c_list), interval=1000, repeat=False)
         plt.tight_layout()
         plt.show()
@@ -451,7 +449,7 @@ if __name__ == "__main__":
     accuracy = 0.001
 
     base = Base(formula, accuracy)
-    bisketion = Bisektion(formula, accuracy)
+    bisektion = Bisektion(formula, accuracy)
     newton_raphson = NewtonRaphson(formula, accuracy, formula_derivative)
     regula_falsi = RegulaFalsi(formula, accuracy)
     plotter = Plotter(formula, accuracy)
