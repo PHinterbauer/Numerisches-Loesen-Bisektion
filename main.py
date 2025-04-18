@@ -12,17 +12,27 @@ class Base:
         enable_plot (bool): Indicates if plotting is enabled.
         enable_zoom (bool): Indicates if automatic zooming is enabled for the main plot.
     """
-    def __init__(self, formula: str = "", accuracy: float = 0.0, fig = None, a: float = 0.0, b: float = 0.0, n: float = 0.0, sep_length: int = 100):
+    def __init__(self, 
+                formula: str = "", 
+                accuracy: float = 0.0, 
+                a: float = 0.0, 
+                b: float = 0.0, 
+                n: float = 0.0, 
+                sep_length: int = 100, 
+                fig = plt.figure(figsize=(14, 8)), 
+                methods: list = ["bisektion", "newton_raphson", "regula_falsi"], 
+                enable_plot: bool = False, 
+                enable_zoom: bool = False):
         self.formula = formula
         self.accuracy = accuracy
-        self.fig = fig
         self.a = a
         self.b = b
         self.n = n
         self.sep_length = sep_length
-        self.methods: list = ["bisektion", "newton_raphson", "regula_falsi"]
-        self.enable_plot: bool = False
-        self.enable_zoom: bool = False
+        self.fig = fig
+        self.methods = methods
+        self.enable_plot = enable_plot
+        self.enable_zoom = enable_zoom
 
     def separator(self):
         """
@@ -153,15 +163,33 @@ class Bisektion(Base):
         enable_plot (bool): Indicates if plotting is enabled.
         methods (list): List of available methods for root finding.
     """
-    def __init__(self, formula="", accuracy=0.0, fig=plt.figure(figsize=(14, 8)), a=0.0, b=0.0, n=0.0, sep_length=100):
-        super().__init__(formula, accuracy, fig, a, b, n, sep_length)
-        self.c: float = 0.0
-        self.fa: float = 0.0
-        self.fb: float = 0.0
-        self.fc: float = 0.0
-        self.controll_value: float = 0.0
-        self.result: dict = {}
-        self.controll: bool = False
+    # def __init__(self, formula="", accuracy=0.0, fig=plt.figure(figsize=(14, 8)), a=0.0, b=0.0, n=0.0, sep_length=100):
+    def __init__(self,
+                formula,
+                accuracy,
+                a, 
+                b, 
+                n, 
+                sep_length, 
+                fig, 
+                methods, 
+                enable_plot, 
+                enable_zoom, 
+                c: float = 0.0, 
+                fa: float = 0.0, 
+                fb: float = 0.0, 
+                fc: float = 0.0, 
+                controll_value: float = 0.0,
+                result: dict = {},
+                controll: bool = False):
+        super().__init__(formula, accuracy, fig, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom)
+        self.c = c
+        self.fa = fa
+        self.fb = fb
+        self.fc = fc
+        self.controll_value = controll_value
+        self.result = result
+        self.controll = controll
 
     def calculate_fa(self):
         """
@@ -330,10 +358,29 @@ class Newton_Raphson(Bisektion):
         formula_derivative (str): The derivative of the mathematical formula as a string.
         derivative (float): The derivative value at the current approximation (c).
     """
-    def __init__(self, formula="", accuracy=0.0, fig=None, a=0.0, b=0.0, n=0.0, sep_length=100):
-        super().__init__(formula, accuracy, fig, a, b, n, sep_length)
-        self.formula_derivative: str = ""
-        self.derivative: float = 0.0
+    def __init__(self,
+                formula,
+                accuracy,
+                a, 
+                b, 
+                n, 
+                sep_length, 
+                fig, 
+                methods, 
+                enable_plot, 
+                enable_zoom, 
+                c, 
+                fa, 
+                fb, 
+                fc, 
+                controll_value,
+                result,
+                controll,
+                formula_derivative: str = "",
+                derivative: float = 0.0):
+        super().__init__(formula, accuracy, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom, c, fa, fb, fc, controll_value, result, controll)
+        self.formula_derivative = formula_derivative
+        self.derivative = derivative
 
     def calculate_c(self):
         """
@@ -359,8 +406,25 @@ class Regula_Falsi(Bisektion):
     Inherits from:
         Bisektion: Reuses the structure and methods of the bisection method.
     """
-    def __init__(self, formula="", accuracy=0.0, fig=None, a=0.0, b=0.0, n=0.0, sep_length=100):
-        super().__init__(formula, accuracy, fig, a, b, n, sep_length)
+    def __init__(self,
+                formula,
+                accuracy,
+                a, 
+                b, 
+                n, 
+                sep_length, 
+                fig, 
+                methods, 
+                enable_plot, 
+                enable_zoom, 
+                c, 
+                fa, 
+                fb, 
+                fc, 
+                controll_value,
+                result,
+                controll):
+        super().__init__(formula, accuracy, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom, c, fa, fb, fc, controll_value, result, controll)
 
     def calculate_c(self):
         """
