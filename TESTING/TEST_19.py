@@ -74,6 +74,11 @@ class Plotter:
         self.texts = []
 
     def update(self, frame):
+        print("Current a:", self.a_vals[frame])
+        print("Current b:", self.b_vals[frame])
+        print("Current c:", self.c_vals[frame])
+        print("Current fc:", self.fc_vals[frame])
+        print("Current iteration:", frame + 1)
         # Clear previous iteration numbers
         for text in self.texts:
             text.remove()

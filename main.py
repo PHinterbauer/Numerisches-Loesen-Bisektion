@@ -534,6 +534,12 @@ class Plotter(Base):
         Returns:
             Updated plot elements.
         """
+        print("Current a:", self.a_list[frame])
+        print("Current b:", self.b_list[frame])
+        print("Current c:", self.c_list[frame])
+        print("Current fc:", self.fc_list[frame])
+        print("Current n:", self.n)
+        print("Current iteration:", frame + 1)
         # Clear previous text annotations
         for text_str in self.c_points_text_str_list:
             text_str.remove()
