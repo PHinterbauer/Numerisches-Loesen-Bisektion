@@ -388,14 +388,14 @@ class NewtonRaphson(BaseCalculations):
         """
         **calculate_c**: Calculates the next approximation of the root using the Newton-Raphson formula.
         """
-        self.derivative = eval(self.formula_derivative.format(x=self.c)) # Calculate derivative
         try:
-            self.c = self.c - self.fc / self.derivative # Newton-Raphson formula
+            self.c_derivative = eval(self.formula_derivative.format(x=self.c)) # Calculate derivative
+            self.c = self.c - self.fc / self.c_derivative # Newton-Raphson formula
         except ZeroDivisionError:
             self.separator()
             print("Division by zero! Offsetting by 1e-10")
             self.separator()
-            self.c = self.c - self.fc / (self.derivative + 1e-10) # Handle division by zero
+            self.c = self.c - self.fc / (self.c_derivative + 1e-10) # Handle division by zero
 
 class RegulaFalsi(BaseCalculations):
     """
@@ -457,7 +457,7 @@ class Plotter(BaseCalculations):
         self.fig.canvas.manager.set_window_title("Nullstellenberechnung durch Iterative-Verfahren")
 
         # Create x values and calculate y values for function plot
-        self.x_func_line = np.linspace(self.a_initial, self.b_initial, 500)
+        self.x_func_line = np.linspace((abs(self.a_initial + (self.a_initial * 1.1))) * -1, abs(self.b_initial + (self.b_initial * 1.2)), 500)
         self.y_func_line = [eval(self.formula.format(x=x, n=self.n)) for x in self.x_func_line]
 
         # Main subplot for function plot
@@ -467,7 +467,7 @@ class Plotter(BaseCalculations):
         self.a_vertical_line = self.approach_to_root.axvline(0, color="green", linestyle="--", label="a")
         self.b_vertical_line = self.approach_to_root.axvline(0, color="purple", linestyle="--", label="b")
         self.approach_to_root.axhline(0, color="gray", linestyle="--")
-        self.approach_to_root.set_title("Annäherung an die Nullstelle")
+        self.approach_to_root.set_title("Annäherung an die Nullstelle mit einer Genauigkeit von epsilon = {accuracy}".format(accuracy=self.accuracy))
         self.approach_to_root.set_xlabel("c")
         self.approach_to_root.set_ylabel("f(c)")
         self.approach_to_root.grid(True)
@@ -585,10 +585,10 @@ class Plotter(BaseCalculations):
 
 if __name__ == "__main__":
     # Example formula and its derivative aswell as accuracy and speed settings
-    formula = "{x}**2 - {n} " # e.g. {x}**2 - {n} / 2*{x} + {x}**2 + 3*{x}**3 - {x}**4
-    formula_derivative = "2 * {x}" # e.g. 2 * {x} / 2 + 2*{x} + 9*{x}**2 - 4*{x}**3
-    accuracy = 0.001 # e.g. 1e-50
-    plot_speed = 1000 # ms per frame
+    formula = "{x}**2 - {n}" # e.g. np.sqrt({n}) - {x} | {x}**2 - {n} | 2*{x} + {x}**2 + 3*{x}**3 - {x}**4 | {x} * np.cosh(50 / {x}) - {x} - 10 < numpy cosh and sinh require a lot of extra constants from numpy (e.g. inf) and error handling to be calculated correctly using newton raphson (bisektion and regula falsi work fine since they are much simpler) and displaying in a plot
+    formula_derivative = "2 * {x}" # e.g. -1 + {x} * 0 | 2 * {x} | 2 + 2*{x} + 9*{x}**2 - 4*{x}**3
+    accuracy = 0.001 # e.g. 1e-50 | 1e-2 | 1e-8 | 0.001 
+    plot_speed = 700 # ms per frame
     iteration_speed = 0.2 # s per iteration
 
     # Initialize all components
