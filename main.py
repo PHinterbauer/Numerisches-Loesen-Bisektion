@@ -584,7 +584,7 @@ class Plotter(BaseCalculations):
         plt.show()
 
 if __name__ == "__main__":
-    # Example formula and its derivative
+    # Example formula and its derivative aswell as accuracy and speed settings
     formula = "{x}**2 - {n} " # e.g. {x}**2 - {n} / 2*{x} + {x}**2 + 3*{x}**3 - {x}**4
     formula_derivative = "2 * {x}" # e.g. 2 * {x} / 2 + 2*{x} + 9*{x}**2 - 4*{x}**3
     accuracy = 0.001 # e.g. 1e-50
