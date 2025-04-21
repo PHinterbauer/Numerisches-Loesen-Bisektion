@@ -462,8 +462,8 @@ class Plotter(BaseCalculations):
 
         # Main subplot for function plot
         self.approach_to_root = self.fig.add_subplot(2, 1, 1)
-        self.func_line_list, = self.approach_to_root.plot(self.x_func_line, self.y_func_line, label=self.formula.replace("{", "").replace("}", ""), color="blue") # 
-        self.c_point_list, = self.approach_to_root.plot([], [], "ro", label="Geschätzte Nullstelle")
+        self.func_line_list, = self.approach_to_root.plot(self.x_func_line, self.y_func_line, label=self.formula.replace("{", "").replace("}", ""), color="blue") # Unpacks single-element tuple to get the line object directly
+        self.c_point_list, = self.approach_to_root.plot([], [], "ro", label="Geschätzte Nullstelle") # Unpacks single-element tuple to get the red circle (ro) object directly
         self.a_vertical_line = self.approach_to_root.axvline(0, color="green", linestyle="--", label="a")
         self.b_vertical_line = self.approach_to_root.axvline(0, color="purple", linestyle="--", label="b")
         self.approach_to_root.axhline(0, color="gray", linestyle="--")
@@ -475,7 +475,7 @@ class Plotter(BaseCalculations):
 
         # Log plot of |f(c)| over iterations 
         self.fc_per_iter_logplot = self.fig.add_subplot(2, 2, 3)
-        self.fc_per_iter_logplot_line_list, = self.fc_per_iter_logplot.plot([0], [1e-100], "go-", label="|f(c)|")
+        self.fc_per_iter_logplot_line_list, = self.fc_per_iter_logplot.plot([0], [1e-100], "go-", label="|f(c)|") # Unpacks single-element tuple to get the line object directly
         self.fc_per_iter_logplot.axhline(0, color="gray", linestyle="--")
         self.fc_per_iter_logplot.set_title("|f(c)| pro Iteration (Logarithmisch)")
         self.fc_per_iter_logplot.set_xlabel("Iteration")
@@ -486,7 +486,7 @@ class Plotter(BaseCalculations):
 
         # Linear plot of f(c) over iterations
         self.fc_per_iter = self.fig.add_subplot(2, 2, 4)
-        self.fc_per_iter_line_list, = self.fc_per_iter.plot([], [], "go-", label="f(c)")
+        self.fc_per_iter_line_list, = self.fc_per_iter.plot([], [], "go-", label="f(c)") # Unpacks single-element tuple to get the line object directly
         self.fc_per_iter.axhline(0, color="gray", linestyle="--")
         self.fc_per_iter.set_title("f(c) pro Iteration")
         self.fc_per_iter.set_xlabel("Iteration")
@@ -561,7 +561,7 @@ class Plotter(BaseCalculations):
             self.c_points_text_str_list.append(c_point_text_str_iter)
 
         # Update log plot
-        log_fc_list = np.abs(self.fc_list[:frame + 1]) + 1e-10
+        log_fc_list = np.abs(self.fc_list[:frame + 1]) + 1e-10 # Avoid log(0)
         self.fc_per_iter_logplot_line_list.set_data(range(1, frame + 2), log_fc_list)
         self.fc_per_iter_logplot.set_xlim(1, len(self.c_list) + 1)
         self.fc_per_iter_logplot.set_ylim(min(log_fc_list) * 0.9, max(log_fc_list) * 1.1)
