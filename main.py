@@ -1,59 +1,58 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import time
 
-class Base:
+class Base():
     """
-    **Base**: A base class for common methods and attributes used.
+    **Base**: Base class for handling user input and managing settings for numerical methods.
 
     Attributes:
-        sep_length (int): Length of the separator line.
+        formula (str): The mathematical formula to evaluate.
+        accuracy (float): The desired accuracy for the calculations.
+        a (float): The lower bound of the interval.
+        a_initial (float): The initial value of the lower bound.
+        b (float): The upper bound of the interval.
+        b_initial (float): The initial value of the upper bound.
+        n (float): The parameter used in the formula.
+        sep_length (int): The length of the separator for console output.
         methods (list): List of available methods for root finding.
-        enable_plot (bool): Indicates if plotting is enabled.
-        enable_zoom (bool): Indicates if automatic zooming is enabled for the main plot.
+        enable_plot (bool): Flag to enable or disable plotting.
+        enable_zoom (bool): Flag to enable or disable zooming in the plot.
     """
-    def __init__(self, 
-                formula: str = "", 
-                accuracy: float = 0.0, 
-                a: float = 0.0, 
-                b: float = 0.0, 
-                n: float = 0.0, 
-                sep_length: int = 100, 
-                fig = plt.figure(figsize=(14, 8)), 
-                methods: list = ["bisektion", "newton_raphson", "regula_falsi"], 
-                enable_plot: bool = False, 
-                enable_zoom: bool = False):
+    def __init__(self, formula: str, accuracy: float, a: float = 0.0, a_initial: float = 0.0, b: float = 0.0, b_initial: float = 0.0, n: float = 0.0, sep_length: int = 100, methods: list = ["bisektion", "newton_raphson", "regula_falsi"], enable_plot: bool = False, enable_zoom: bool = False):
         self.formula = formula
         self.accuracy = accuracy
         self.a = a
+        self.a_initial = a_initial
         self.b = b
+        self.b_initial = b_initial
         self.n = n
         self.sep_length = sep_length
-        self.fig = fig
         self.methods = methods
         self.enable_plot = enable_plot
         self.enable_zoom = enable_zoom
 
     def separator(self):
         """
-        **separator**: Prints a separator line of specified length.
+        **separator**: Prints a separator line for console output.
         """
         print("-" * self.sep_length)
 
     def get_plotter_zoom(self):
         """
-        **get_plotter_zoom**: Prompts the user if they want automatic zooming on the main plot.
+        **get_plotter_zoom**: Prompts the user to enable or disable zooming in the plot.
         """
         flag = True
         while flag:
-            choice = input("Do you want to activate automatic zooming on the main plot? [y/n]: ").lower() # Input for zooming
-            self.separator()  # Print separator
+            choice = input("Do you want to activate automatic zooming on the main plot? [y/n]: ").lower()
+            self.separator()
             if choice in ["y", "yes", "n", "no"]:
                 if choice in ["y", "yes"]:
-                    self.enable_zoom = True # Set zoom flag to True
+                    self.enable_zoom = True
                     flag = False
                 else:
-                    self.enable_zoom = False # Set zoom flag to False
+                    self.enable_zoom = False
                     flag = False
             else:
                 print("Invalid selection! Please choose [y/n].")
@@ -61,19 +60,19 @@ class Base:
 
     def get_plotter(self):
         """
-        **get_plotter**: Prompts the user if they want to plot the outcome.
+        **get_plotter**: Prompts the user to enable or disable plotting and handles zoom settings.
         """
         flag = True
         while flag:
-            choice = input("Do you want to plot the outcome? [y/n]: ").lower()  # Input for plotting
-            self.separator()  # Print separator
+            choice = input("Do you want to plot the outcome? [y/n]: ").lower()
+            self.separator()
             if choice in ["y", "yes", "n", "no"]:
                 if choice in ["y", "yes"]:
                     self.get_plotter_zoom()
-                    self.enable_plot = True # Set plot flag to True
+                    self.enable_plot = True
                     flag = False
                 else:
-                    self.enable_plot = False # Set plot flag to False
+                    self.enable_plot = False
                     flag = False
             else:
                 print("Invalid selection! Please choose [y/n].")
@@ -81,20 +80,20 @@ class Base:
 
     def start_method(self):
         """
-        **start_method**: Prompts the user to select a method for root finding and starts the main loop.
+        **start_method**: Prompts the user to select a numerical method and starts the calculation process.
         """
-        self.separator()  # Print separator
+        self.separator()
         print("Select the method:\n1. Bisection\n2. Newton-Raphson\n3. Regula Falsi")
         flag = True
         while flag:
             try:
-                choice = int(input("Enter the number of the method: "))  # Input for method selection
-                self.separator()  # Print separator
+                choice = int(input("Enter the number of the method: "))
+                self.separator()
                 if choice in [1, 2, 3]:
                     self.get_plotter()
-                    eval(self.methods[choice - 1] + ".main_loop()")  # Call the selected method's main loop
+                    eval(self.methods[choice - 1] + ".main_loop()")
                     if self.enable_plot:
-                        plotter.plot()  # Call the plot method if selected
+                        plotter.plot()
                     flag = False
                 else:
                     print("Invalid selection! Please choose 1, 2, or 3.")
@@ -105,148 +104,135 @@ class Base:
 
     def get_n(self):
         """
-        **get_n**: Prompts the user to input the value of n.
+        **get_n**: Prompts the user to input the parameter 'n' for the formula.
         """
-        flag = True
-        while flag:
-            try:
-                self.n = float(input(f'Enter n for: '))  # Input for n
-                flag = False
-            except ValueError:
-                print("Please enter a valid number!")  # Handle invalid input
-                continue
+        if "{n}" in self.formula:
+            flag = True
+            while flag:
+                try:
+                    self.n = float(input(f'Enter n for: '))
+                    flag = False
+                except ValueError:
+                    print("Please enter a valid number!")
+                    continue
+        else:
+            self.formula += " + {n}"
 
     def get_interval_a(self):
         """
-        **get_interval_a**: Prompts the user to input the start of the interval (a).
+        **get_interval_a**: Prompts the user to input the lower bound of the interval.
         """
         flag = True
         while flag:
             try:
-                self.a = float(input(f'Enter a for: '))  # Input for interval start
+                self.a = self.a_initial = float(input(f'Enter a for: '))
                 flag = False
             except ValueError:
-                print("Please enter a valid number!")  # Handle invalid input
+                print("Please enter a valid number!")
                 continue
 
     def get_interval_b(self):
         """
-        **get_interval_b**: Prompts the user to input the end of the interval (b).
+        **get_interval_b**: Prompts the user to input the upper bound of the interval.
         """
         flag = True
         while flag:
             try:
-                self.b = float(input(f'Enter b for: '))  # Input for interval end
-                self.separator()  # Print separator
+                self.b = self.b_initial = float(input(f'Enter b for: '))
+                self.separator()
                 flag = False
             except ValueError:
-                print("Please enter a valid number!")  # Handle invalid input
+                print("Please enter a valid number!")
                 continue
 
-class Bisektion(Base):
+class BaseCalculations(Base):
     """
-    **Bisektion**: Implements the bisection method for root finding.
+    **BaseCalculations**: Base class for performing calculations related to root-finding methods.
+
+    Inherits from:
+        Base: Provides user input handling and settings management.
 
     Attributes:
-        a (float): Start of interval.
-        b (float): End of interval.
-        c (float): Midpoint of interval.
-        n (float): Input number for the formula.
-        fa (float): Function value at a.
-        fb (float): Function value at b.
-        fc (float): Function value at c.
-        accuracy (float): Desired accuracy for the result.
-        controll_value (float): Product of fa and fb.
-        result (dict): Stores the final result.
-        formula (str): Mathematical formula as a string.
-        controll (bool): Indicates if the interval is valid.
-        enable_plot (bool): Indicates if plotting is enabled.
-        methods (list): List of available methods for root finding.
+        base (Base): The base class instance.
+        c (float): The midpoint or calculated root.
+        fa (float): The function value at 'a'.
+        fb (float): The function value at 'b'.
+        fc (float): The function value at 'c'.
+        control_value (float): The product of 'fa' and 'fb'.
+        result (dict): Stores the result of the calculation.
+        control (bool): Indicates if the interval contains a root.
     """
-    # def __init__(self, formula="", accuracy=0.0, fig=plt.figure(figsize=(14, 8)), a=0.0, b=0.0, n=0.0, sep_length=100):
-    def __init__(self,
-                formula,
-                accuracy,
-                a, 
-                b, 
-                n, 
-                sep_length, 
-                fig, 
-                methods, 
-                enable_plot, 
-                enable_zoom, 
-                c: float = 0.0, 
-                fa: float = 0.0, 
-                fb: float = 0.0, 
-                fc: float = 0.0, 
-                controll_value: float = 0.0,
-                result: dict = {},
-                controll: bool = False):
-        super().__init__(formula, accuracy, fig, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom)
+    def __init__(self, base: Base, iteration_speed: float, c: float = 0.0, fa: float = 0.0, fb: float = 0.0, fc: float = 0.0, control_value: float = 0.0, result: dict = {}, control: bool = False):
+        self.base = base
+        self.iteration_speed = iteration_speed
         self.c = c
         self.fa = fa
         self.fb = fb
         self.fc = fc
-        self.controll_value = controll_value
+        self.control_value = control_value
         self.result = result
-        self.controll = controll
+        self.control = control
+
+    def __getattr__(self, attr):
+        return getattr(self.base, attr)
 
     def calculate_fa(self):
         """
-        **calculate_fa**: Calculates the function value at a (fa).
+        **calculate_fa**: Calculates the function value at 'a'.
         """
-        self.fa = eval(self.formula.format(x=self.a, n=self.n))  # Evaluate formula at a
+        self.fa = eval(self.formula.format(x=self.a, n=self.n))
 
     def calculate_fb(self):
         """
-        **calculate_fb**: Calculates the function value at b (fb).
+        **calculate_fb**: Calculates the function value at 'b'.
         """
-        self.fb = eval(self.formula.format(x=self.b, n=self.n))  # Evaluate formula at b
+        self.fb = eval(self.formula.format(x=self.b, n=self.n))
 
     def calculate_c(self):
         """
-        **calculate_c**: Calculates the midpoint of the interval (c).
+        **calculate_c**: Abstract method to calculate the value of 'c'. Must be implemented in subclasses.
         """
-        self.c = (self.a + self.b) / 2  # Midpoint formula
+        raise NotImplementedError("Die Methode 'calculate_c' muss in der Unterklasse überschrieben werden.")
 
     def calculate_fc(self):
         """
-        **calculate_fc**: Calculates the function value at c (fc).
+        **calculate_fc**: Calculates the function value at 'c'.
         """
-        self.fc = eval(self.formula.format(x=self.c, n=self.n))  # Evaluate formula at c
+        self.fc = eval(self.formula.format(x=self.c, n=self.n))
 
-    def check_controll(self):
+    def check_control(self):
         """
-        **check_controll**: Checks if the interval is valid by evaluating fa * fb.
+        **check_control**: Checks if the interval contains a root by evaluating the product of 'fa' and 'fb'.
         """
-        self.controll_value = self.fa * self.fb  # Product of fa and fb
-        self.controll = self.controll_value < 0 # Valid if product is negative
+        self.control_value = self.fa * self.fb
+        self.control = self.control_value < 0
 
     def switch_interval(self):
         """
-        **switch_interval**: Updates the interval based on the sign of fa * fc.
+        **switch_interval**: Updates the interval based on the sign of the function values.
         """
         if self.fa * self.fc < 0:
-            self.b = self.c  # Update b if fa * fc < 0
+            self.b = self.c
         else:
-            self.a = self.c  # Update a otherwise
+            self.a = self.c
 
     def calc_separator(self, text_1: str, header: str, text_2: str = "", text_3: str = ""):
         """
-        **calc_separator**: Calculates padding for formatted output.
+        **calc_separator**: Calculates the padding for formatted console output.
 
         Parameters:
-            text_1 (str): The first text to align (usually the longest).
+            text_1 (str): The first line of text.
             header (str): The header text.
-            text_2 (str, optional): A second text to consider for length.
-            text_3 (str, optional): A third text to consider for length.
+            text_2 (str): The second line of text (optional).
+            text_3 (str): The third line of text (optional).
 
         Returns:
-            left_side_length (int), right_side_length (int), and total length (int).
+            left_side_length (int): Left padding.
+            right_side_length (int): Right padding.
+            total_length (int): Total length of the separator.
         """
-        # Determine the longest text among the provided options
         total_length = max(len(text_1), len(text_2), len(text_3))
-        side_length = (total_length - len(header)) // 2  # Calculate side padding
+        side_length = (total_length - len(header)) // 2
 
         left_side_length = side_length
         right_side_length = total_length - len(header) - left_side_length
@@ -255,88 +241,82 @@ class Bisektion(Base):
 
     def main_loop(self):
         """
-        **main_loop**: Executes the bisection method until the desired accuracy is achieved.
-        """
+        **main_loop**: Executes the main iterative process for root-finding.
+        """ 
         iteration = 1
         self.result = {}
-        self.get_n()  # Get input for n
-        self.get_interval_a()  # Get interval start
-        self.get_interval_b()  # Get interval end
-        self.calculate_fa()  # Calculate fa
-        self.calculate_fb()  # Calculate fb
-        self.calculate_c()  # Calculate midpoint c
-        self.calculate_fc()  # Calculate fc
-        self.check_controll()  # Check if interval is valid
+        self.get_n()
+        self.get_interval_a()
+        self.get_interval_b()
+        self.calculate_fa()
+        self.calculate_fb()
+        self.calculate_c()
+        self.calculate_fc()
+        self.check_control()
 
         if self.enable_plot:
-            plotter.initialize_plot(self.a, self.b, self.n)  # Initialize plot
-            plotter.update_data(self.a, self.b, self.c, self.fc)  # Update plot data
+            plotter.update_data(self.a, self.b, self.c, self.fc, self.n, self.a_initial, self.b_initial)
 
-        # Print initial iteration
         left_side_length, right_side_length, total_length = self.calc_separator(
             text_1=f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}',
             text_2=f'a: {self.a}, b: {self.b}, c: {self.c}',
-            text_3=f'controll: {self.controll}, controll value: {self.controll_value}',
-            header=f' Iteration: {iteration} '
-        )
+            text_3=f'control: {self.control}, control value: {self.control_value}',
+            header=f' Iteration: {iteration} ')
         print("=" * left_side_length, "Iteration: {iteration}".format(iteration=iteration), "=" * right_side_length)
         print(f'a: {self.a}, b: {self.b}, c: {self.c}')
         print(f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}')
-        print(f'controll: {self.controll}, controll value: {self.controll_value}')
+        print(f'control: {self.control}, control value: {self.control_value}')
         print("=" * total_length)
 
-        self.switch_interval()  # Update interval
+        self.switch_interval()
 
-        # Perform iterations
-        while np.floor(abs(self.fc) * 10 ** (abs(int(np.log10(self.accuracy))) - 1)) != 0 and self.controll:
+        time.sleep(self.iteration_speed)
+
+        while np.floor(abs(self.fc) * 10 ** (abs(int(np.log10(self.accuracy))) - 1)) != 0 and self.control:
             iteration += 1
-            self.calculate_fa()  # Update fa
-            self.calculate_fb()  # Update fb
-            self.calculate_c()  # Update c
-            self.calculate_fc()  # Update fc
-            self.check_controll()  # Recheck interval validity
+            self.calculate_fa()
+            self.calculate_fb()
+            self.calculate_c()
+            self.calculate_fc()
+            self.check_control()
 
             if self.enable_plot:
-                plotter.update_data(self.a, self.b, self.c, self.fc)  # Update plot data
+                plotter.update_data(self.a, self.b, self.c, self.fc, self.n, self.a_initial, self.b_initial)
 
-            # Print iterations
             left_side_length, right_side_length, total_length = self.calc_separator(
                 text_1=f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}',
                 text_2=f'a: {self.a}, b: {self.b}, c: {self.c}',
-                text_3=f'controll: {self.controll}, controll value: {self.controll_value}',
-                header=f' Iteration: {iteration} '
-            )
+                text_3=f'control: {self.control}, control value: {self.control_value}',
+                header=f' Iteration: {iteration} ')
             print("=" * left_side_length, "Iteration: {iteration}".format(iteration=iteration), "=" * right_side_length)
             print(f'a: {self.a}, b: {self.b}, c: {self.c}')
             print(f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}')
-            print(f'controll: {self.controll}, controll value: {self.controll_value}')
+            print(f'control: {self.control}, control value: {self.control_value}')
             print("=" * total_length)
 
-            self.switch_interval()  # Update interval
+            self.switch_interval()
 
-            # Check for exact solutions
+            time.sleep(self.iteration_speed)
+
             if self.fc == 0:
-                self.c = self.c  # Exact solution at c
+                self.c = self.c
                 break
             elif self.fa == 0:
-                self.c = self.a  # Exact solution at a
+                self.c = self.a
                 break
             elif self.fb == 0:
-                self.c = self.b  # Exact solution at b
+                self.c = self.b
                 break
 
-        # Check if the loop ended due to a valid solution or not
-        if not self.controll:
-            print("No solution found!") # No valid solution
+        if not self.control:
+            print("No solution found!")
         else:
             self.result["c"] = self.c
 
-        # Print the result
         if self.result:
             left_side_length, right_side_length, total_length = self.calc_separator(
                 text_1=f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}',
-                header=f' Result '
-            )
+                header=f' Result ')
             print("=" * left_side_length, "Result", "=" * right_side_length)
             for key, value in self.result.items():
                 result_text = f'{key}: {value}'
@@ -344,151 +324,133 @@ class Bisektion(Base):
                 print(" " * left_padding + result_text + " " * right_padding)
             print("=" * total_length)
         else:
-            print("No solution found!")  # No valid solution
+            print("No solution found!")
 
-class Newton_Raphson(Bisektion):
+class Bisektion(BaseCalculations):
     """
-    **Newton_Raphson**: Implements the Newton-Raphson method for root finding.
+    **Bisektion**: Implements the bisection method for root-finding.
 
     Inherits from:
-        Bisektion: Reuses the structure and methods of the bisection method.
+        BaseCalculations: Provides the base functionality for calculations.
+
+    Methods:
+        calculate_c: Calculates the midpoint of the interval.
+    """
+    def __init__(self, base: BaseCalculations):
+        self.base = base
+    
+    def __getattr__(self, attr):
+        return getattr(self.base, attr)
+
+    def calculate_c(self):
+        """
+        **calculate_c**: Calculates the midpoint of the interval.
+        """
+        self.c = (self.a + self.b) / 2
+
+class NewtonRaphson(BaseCalculations):
+    """
+    **NewtonRaphson**: Implements the Newton-Raphson method for root-finding.
+
+    Inherits from:
+        BaseCalculations: Provides the base functionality for calculations.
 
     Attributes:
-        formula (str): Mathematical formula as a string.
-        formula_derivative (str): The derivative of the mathematical formula as a string.
-        derivative (float): The derivative value at the current approximation (c).
+        formula_derivative (str): The derivative of the formula.
+        c_derivative (float): The derivative value at 'c'.
     """
-    def __init__(self,
-                formula,
-                accuracy,
-                a, 
-                b, 
-                n, 
-                sep_length, 
-                fig, 
-                methods, 
-                enable_plot, 
-                enable_zoom, 
-                c, 
-                fa, 
-                fb, 
-                fc, 
-                controll_value,
-                result,
-                controll,
-                formula_derivative: str = "",
-                derivative: float = 0.0):
-        super().__init__(formula, accuracy, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom, c, fa, fb, fc, controll_value, result, controll)
+    def __init__(self, base: BaseCalculations, formula_derivative: str, c_derivative: float = 0.0):
+        self.base = base
         self.formula_derivative = formula_derivative
-        self.derivative = derivative
+        self.c_derivative = c_derivative
+
+    def __getattr__(self, attr):
+        return getattr(self.base, attr)
 
     def calculate_c(self):
         """
-        **calculate_c**: Calculates the next approximation (c) using the Newton-Raphson formula.
+        **calculate_c**: Calculates the next approximation of the root using the Newton-Raphson formula.
         """
-        # Ensure c is not initialized to a value that causes the derivative to be zero
-        if self.c == 0:
-            if self.a == 0:
-                self.c = self.b
-            else:
-                self.c = self.a
+        self.derivative = eval(self.formula_derivative.format(x=self.c))
+        try:
+            self.c = self.c - self.fc / self.derivative
+        except ZeroDivisionError:
+            self.separator()
+            print("Division by zero! Offsetting by 1e-10")
+            self.separator()
+            self.c = self.c - self.fc / (self.derivative + 1e-10)
 
-        # Newton-Raphson formula: c = c - f(c) / f'(c)
-        self.derivative = eval(self.formula_derivative.format(x=self.c))  # Evaluate derivative at c
-        if self.derivative == 0:
-            raise ValueError("Derivative is zero. Newton-Raphson method fails.")
-        self.c = self.c - self.fc / self.derivative  # Update c
-
-class Regula_Falsi(Bisektion):
+class RegulaFalsi(BaseCalculations):
     """
-    **Regula_Falsi**: Implements the Regula Falsi (False Position) method for root finding.
+    **RegulaFalsi**: Implements the Regula Falsi method for root-finding.
 
     Inherits from:
-        Bisektion: Reuses the structure and methods of the bisection method.
+        BaseCalculations: Provides the base functionality for calculations.
+
+    Methods:
+        calculate_c: Calculates the next approximation of the root using the Regula Falsi formula.
     """
-    def __init__(self,
-                formula,
-                accuracy,
-                a, 
-                b, 
-                n, 
-                sep_length, 
-                fig, 
-                methods, 
-                enable_plot, 
-                enable_zoom, 
-                c, 
-                fa, 
-                fb, 
-                fc, 
-                controll_value,
-                result,
-                controll):
-        super().__init__(formula, accuracy, a, b, n, sep_length, fig, methods, enable_plot, enable_zoom, c, fa, fb, fc, controll_value, result, controll)
+    def __init__(self, base: BaseCalculations):
+        self.base = base
+
+    def __getattr__(self, attr):
+        return getattr(self.base, attr)
 
     def calculate_c(self):
         """
-        **calculate_c**: Calculates the next approximation (c) using the Regula Falsi formula.
+        **calculate_c**: Calculates the next approximation of the root using the Regula Falsi formula.
         """
-        # Regula Falsi formula: c = b - (fb * (b - a)) / (fb - fa)
-        if self.fb - self.fa == 0:
-            raise ValueError("Division by zero in Regula Falsi method.")
-        self.c = self.b - (self.fb * (self.b - self.a)) / (self.fb - self.fa)
+        self.c = (self.a * self.fb - self.b * self.fa) / (self.fb - self.fa)
 
-class Plotter(Base):
+class Plotter(BaseCalculations):
     """
     **Plotter**: Handles the visualization of the root-finding process.
 
     Inherits from:
-        Bisektion: Reuses the structure and methods of the bisection method.
+        BaseCalculations: Provides the base functionality for calculations.
 
     Attributes:
-        a_list (list): Stores the 'a' values for each iteration.
-        b_list (list): Stores the 'b' values for each iteration.
-        c_list (list): Stores the 'c' values (approximations) for each iteration.
-        fc_list (list): Stores the function values at 'c' (f(c)) for each iteration.
-        c_points_text_str_list (list): Stores the text annotations for 'c' points on the plot.
-        enable_zoom (bool): Indicates if automatic zooming is enabled for the main plot.
-        fig (matplotlib.figure.Figure): The figure object for the plot.
+        plot_speed (int): Speed of the plot animation.
+        a_list (list): List of 'a' values over iterations.
+        b_list (list): List of 'b' values over iterations.
+        c_list (list): List of 'c' values over iterations.
+        fc_list (list): List of 'fc' values over iterations.
+        c_points_text_str_list (list): List of text annotations for 'c' points.
     """
-    def __init__(self, formula="", accuracy=0.0, fig=None, a=0.0, b=0.0, n=0.0, sep_length=100):
-        super().__init__(formula, accuracy, fig, a, b, n, sep_length)
-        self.a_list: list = []
-        self.b_list: list = []
-        self.c_list: list = []
-        self.fc_list: list = []
-        self.c_points_text_str_list: list = []
-        self.enable_zoom: bool = False
+    def __init__(self, base: BaseCalculations, plot_speed: int, a_list: list = [], b_list: list = [], c_list: list = [], fc_list: list = [], c_points_text_str_list: list = []):
+        self.base = base
+        self.plot_speed = plot_speed
+        self.a_list = a_list
+        self.b_list = b_list
+        self.c_list = c_list
+        self.fc_list = fc_list
+        self.c_points_text_str_list = c_points_text_str_list
 
-    def initialize_plot(self, a, b, n):
-        """
-        **initialize_plot**: Sets up the initial plot for the root-finding process.
+    def __getattr__(self, attr):
+        return getattr(self.base, attr)
 
-        Parameters:
-            a (float): Start of the interval.
-            b (float): End of the interval.
-            n (float): Input number for the formula.
+    def initialize_plot(self):
         """
+        **initialize_plot**: Sets up the plot layout and initializes plot elements.
+        """
+        self.fig = plt.figure(figsize=(14, 8))
         self.fig.canvas.manager.set_window_title("Nullstellenberechnung durch Iterative-Verfahren")
 
-        # Generate x and y values for the function line
-        self.x_func_line = np.linspace(a, b, 500)
-        self.y_func_line = [eval(self.formula.format(x=x, n=n)) for x in self.x_func_line]
+        self.x_func_line = np.linspace(self.a_initial, self.b_initial, 500)
+        self.y_func_line = [eval(self.formula.format(x=x, n=self.n)) for x in self.x_func_line]
 
-        # Main plot for root approximation
         self.approach_to_root = self.fig.add_subplot(2, 1, 1)
-        self.func_line_list, = self.approach_to_root.plot(self.x_func_line, self.y_func_line, label=self.formula, color="blue")
+        self.func_line_list, = self.approach_to_root.plot(self.x_func_line, self.y_func_line, label=self.formula.replace("{", "").replace("}", ""), color="blue")
         self.c_point_list, = self.approach_to_root.plot([], [], "ro", label="Geschätzte Nullstelle")
         self.a_vertical_line = self.approach_to_root.axvline(0, color="green", linestyle="--", label="a")
         self.b_vertical_line = self.approach_to_root.axvline(0, color="purple", linestyle="--", label="b")
         self.approach_to_root.axhline(0, color="gray", linestyle="--")
-        self.approach_to_root.set_title("Annäherung an Nullstelle")
+        self.approach_to_root.set_title("Annäherung an die Nullstelle")
         self.approach_to_root.set_xlabel("c")
         self.approach_to_root.set_ylabel("f(c)")
         self.approach_to_root.grid(True)
         self.approach_to_root.legend(loc="upper left")
 
-        # Logarithmic plot for |f(c)| per iteration
         self.fc_per_iter_logplot = self.fig.add_subplot(2, 2, 3)
         self.fc_per_iter_logplot_line_list, = self.fc_per_iter_logplot.plot([0], [1e-100], "go-", label="|f(c)|")
         self.fc_per_iter_logplot.axhline(0, color="gray", linestyle="--")
@@ -499,7 +461,6 @@ class Plotter(Base):
         self.fc_per_iter_logplot.grid(True)
         self.fc_per_iter_logplot.legend(loc="upper right")
 
-        # Linear plot for f(c) per iteration
         self.fc_per_iter = self.fig.add_subplot(2, 2, 4)
         self.fc_per_iter_line_list, = self.fc_per_iter.plot([], [], "go-", label="f(c)")
         self.fc_per_iter.axhline(0, color="gray", linestyle="--")
@@ -509,16 +470,22 @@ class Plotter(Base):
         self.fc_per_iter.grid(True)
         self.fc_per_iter.legend(loc="upper right")
 
-    def update_data(self, a, b, c, fc):
+    def update_data(self, a ,b, c, fc, n, a_initial, b_initial):
         """
-        **update_data**: Updates the data lists with new values for each iteration.
+        **update_data**: Updates the data for plotting.
 
         Parameters:
-            a (float): Current 'a' value.
-            b (float): Current 'b' value.
-            c (float): Current 'c' value (approximation).
-            fc (float): Current function value at 'c' (f(c)).
+            a (float): The current value of 'a'.
+            b (float): The current value of 'b'.
+            c (float): The current value of 'c'.
+            fc (float): The function value at 'c'.
+            n (float): The parameter used in the formula.
+            a_initial (float): The initial value of 'a'.
+            b_initial (float): The initial value of 'b'.
         """
+        self.n = n
+        self.a_initial = a_initial
+        self.b_initial = b_initial
         self.a_list.append(a)
         self.b_list.append(b)
         self.c_list.append(c)
@@ -526,91 +493,80 @@ class Plotter(Base):
 
     def update_plot(self, frame):
         """
-        **update_plot**: Updates the plot for each frame during the animation.
+        **update_plot**: Updates the plot elements for each frame in the animation.
 
         Parameters:
-            frame (int): The current frame number in the animation.
+            frame (int): The current frame index.
 
         Returns:
-            Updated plot elements.
+            c_point_list (list): Updated data for 'c' points.
+            a_vertical_line (list): Updated vertical line for 'a'.
+            b_vertical_line (list): Updated vertical line for 'b'.
+            fc_per_iter_logplot_line_list (list): Updated log plot data for |f(c)|.
+            fc_per_iter_line_list (list): Updated plot data for f(c).
         """
-        print("Current a:", self.a_list[frame])
-        print("Current b:", self.b_list[frame])
-        print("Current c:", self.c_list[frame])
-        print("Current fc:", self.fc_list[frame])
-        print("Current n:", self.n)
-        print("Current iteration:", frame + 1)
-        # Clear previous text annotations
         for text_str in self.c_points_text_str_list:
             text_str.remove()
         self.c_points_text_str_list.clear()
 
-        # Update 'a' and 'b' lines aswell as 'c' points
         a_iter = self.a_list[frame]
         b_iter = self.b_list[frame]
         c_point_x_list = self.c_list[:frame + 1]
         c_point_y_list = self.fc_list[:frame + 1]
+
         self.c_point_list.set_data(c_point_x_list, c_point_y_list)
         self.a_vertical_line.set_xdata([a_iter])
         self.b_vertical_line.set_xdata([b_iter])
 
-        # Adjust zoom if enabled
         if self.enable_zoom:
-            approach_to_root_min_width = abs(a_iter - b_iter) # Calculate the width of the interval
-            approach_to_root_zoom = approach_to_root_min_width * 0.05 # Add a small margin for zooming
+            approach_to_root_min_width = abs(a_iter - b_iter)
+            approach_to_root_zoom = approach_to_root_min_width * 0.05
             self.approach_to_root.set_xlim(a_iter - approach_to_root_zoom, b_iter + approach_to_root_zoom)
 
-        # Add text annotations for 'c' points
         c_point_text_y_min, c_point_text_y_max = self.approach_to_root.get_ylim()
-        c_point_text_y_offset = (c_point_text_y_max - c_point_text_y_min) * 0.05 # Offset for text placement
+        c_point_text_y_offset = (c_point_text_y_max - c_point_text_y_min) * 0.05
         for iter in range(len(c_point_x_list)):
             c_point_text_x_iter = c_point_x_list[iter]
             c_point_text_y_iter = c_point_y_list[iter]
-            c_point_text_str_iter = self.approach_to_root.text(
-                c_point_text_x_iter, c_point_text_y_iter + c_point_text_y_offset, str(iter + 1), color="red", fontsize=8, ha="center"
-            )
+            c_point_text_str_iter = self.approach_to_root.text(c_point_text_x_iter, c_point_text_y_iter + c_point_text_y_offset, str(iter + 1), color="red", fontsize=8, ha="center")
             self.c_points_text_str_list.append(c_point_text_str_iter)
 
-        # Update logarithmic plot for |f(c)|
-        log_fc_list = np.abs(self.fc_list[:frame + 1]) + 1e-10  # Take absolute values of f(c) up to the current frame and add a small offset to avoid log(0)
-        self.fc_per_iter_logplot_line_list.set_data(range(1, frame + 2), log_fc_list) # Use range(1, frame + 2) to match iteration numbers (1-based indexing)
-        self.fc_per_iter_logplot.set_xlim(1, len(self.c_list) + 1) # Set x-axis limits to match the number of iterations
-        self.fc_per_iter_logplot.set_ylim(min(log_fc_list) * 0.9, max(log_fc_list) * 1.1) # Adjust y-axis limits with a small margin for better visualization
+        log_fc_list = np.abs(self.fc_list[:frame + 1]) + 1e-10
+        self.fc_per_iter_logplot_line_list.set_data(range(1, frame + 2), log_fc_list)
+        self.fc_per_iter_logplot.set_xlim(1, len(self.c_list) + 1)
+        self.fc_per_iter_logplot.set_ylim(min(log_fc_list) * 0.9, max(log_fc_list) * 1.1)
 
-        # Update linear plot for f(c)
-        self.fc_per_iter_line_list.set_data(range(1, frame + 2), self.fc_list[:frame + 1]) # Include all f(c) values up to the current frame
-        self.fc_per_iter.set_xlim(1, len(self.c_list) + 1) # Set x-axis limits to match the number of iterations
-        self.fc_per_iter.set_ylim(min(self.fc_list) * 1.5, max(self.fc_list) * 1.1) # Adjust y-axis limits with a margin to ensure all points are visible
+        self.fc_per_iter_line_list.set_data(range(1, frame + 2), self.fc_list[:frame + 1])
+        self.fc_per_iter.set_xlim(1, len(self.c_list) + 1)
+        self.fc_per_iter.set_ylim(min(self.fc_list) * 1.5, max(self.fc_list) * 1.1)
 
         return self.c_point_list, self.a_vertical_line, self.b_vertical_line, self.fc_per_iter_logplot_line_list, self.fc_per_iter_line_list
 
     def plot(self):
         """
-        **plot**: Creates and displays the animation for the root-finding process.
+        **plot**: Initializes and displays the plot animation.
         """
-        fig_anim = animation.FuncAnimation(self.fig, self.update_plot, frames=len(self.c_list), interval=1000, repeat=False)
-        plt.tight_layout() # Adjust the layout to prevent overlapping
+        self.initialize_plot()
+        anim1 = animation.FuncAnimation(self.fig, self.update_plot, frames=len(self.c_list), interval=self.plot_speed, repeat=False)
+        plt.tight_layout()
         plt.show()
 
 if __name__ == "__main__":
-    formula = "{x}**2 - {n}" # Formula for root finding (e.g. "np.sqrt({n}) - {x}" / "{x}**2 - self.n")
-    accuracy = 0.001  # Desired accuracy (e.g. 1e-50 / 0.001)
-    fig = plt.figure(figsize=(14, 8)) # Create a figure for plotting
+    formula = "2*{x} + {x}**2 + 3*{x}**3 - {x}**4" # e.g. {x}**2 - {n}
+    formula_derivative = "2 + 2*{x} + 9*{x}**2 - 4*{x}**3" # e.g. 2 * {x}
+    accuracy = 0.001
+    plot_speed = 300
+    iteration_speed = 0.2
 
-    base = Base(formula, accuracy, fig)
-    bisektion = Bisektion(formula, accuracy, fig)
-    newton_raphson = Newton_Raphson(formula, accuracy, fig)
-    regula_falsi = Regula_Falsi(formula, accuracy, fig)
-    plotter = Plotter(formula, accuracy, fig)
+    base = Base(formula, accuracy)
+    base_calculations = BaseCalculations(base, iteration_speed)
+    bisektion = Bisektion(base_calculations)
+    newton_raphson = NewtonRaphson(base_calculations, formula_derivative)
+    regula_falsi = RegulaFalsi(base_calculations)
+    plotter = Plotter(base_calculations, plot_speed)
 
-    newton_raphson.formula_derivative = "2 * {x}"  # Derivative of the formula (e.g. "2 * {x}")
+    base.start_method()
 
-    base.start_method()  # Start the method selection process
-
-# TODO:
-# update class docstrings 
-# move input methods and separator method in extra Class as parent of all classes 
-# change call of start_method to use the new class
-# nonetype object has no attribute canvas - creates new fig dor every class initialization
-# explain comma in initilization of plotter
-# rewrite classes and attributes to be inherited correctly
+# add comments to the code - wichtige teile wie , bei plot initialisierung
+# Aufgabe 8 und 9
+# 542: UserWarning: Attempting to set identical low and high ylims makes transformation singular; automatically expanding. self.fc_per_iter.set_ylim(min(self.fc_list) * 1.5, max(self.fc_list) * 1.1)
