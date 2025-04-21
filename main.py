@@ -1,3 +1,9 @@
+# ==================================
+# Root Finding Methods with Plotting
+
+# Paul Hinterbauer @ TGM Vienna 2025
+# ==================================
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -47,7 +53,7 @@ class Base():
         while flag:
             choice = input("Do you want to activate automatic zooming on the main plot? [y/n]: ").lower()
             self.separator()
-            if choice in ["y", "yes", "n", "no"]:
+            if choice in ["y", "yes", "n", "no"]: # Check valid input
                 if choice in ["y", "yes"]:
                     self.enable_zoom = True
                     flag = False
@@ -66,9 +72,9 @@ class Base():
         while flag:
             choice = input("Do you want to plot the outcome? [y/n]: ").lower()
             self.separator()
-            if choice in ["y", "yes", "n", "no"]:
+            if choice in ["y", "yes", "n", "no"]: # Check valid input
                 if choice in ["y", "yes"]:
-                    self.get_plotter_zoom()
+                    self.get_plotter_zoom() # Get zoom setting if plotting enabled
                     self.enable_plot = True
                     flag = False
                 else:
@@ -89,8 +95,9 @@ class Base():
             try:
                 choice = int(input("Enter the number of the method: "))
                 self.separator()
-                if choice in [1, 2, 3]:
+                if choice in [1, 2, 3]: # Valid method choices
                     self.get_plotter()
+                    # Dynamically call selected method using eval
                     eval(self.methods[choice - 1] + ".main_loop()")
                     if self.enable_plot:
                         plotter.plot()
@@ -106,7 +113,7 @@ class Base():
         """
         **get_n**: Prompts the user to input the parameter 'n' for the formula.
         """
-        if "{n}" in self.formula:
+        if "{n}" in self.formula: # Check if formula uses n parameter
             flag = True
             while flag:
                 try:
@@ -116,7 +123,7 @@ class Base():
                     print("Please enter a valid number!")
                     continue
         else:
-            self.formula += " + {n}"
+            self.formula += " + {n}" # Add n parameter if not present using default value of 0 so it doesn't affect the formula
 
     def get_interval_a(self):
         """
@@ -173,6 +180,7 @@ class BaseCalculations(Base):
         self.result = result
         self.control = control
 
+    # Delegate attribute access to base class
     def __getattr__(self, attr):
         return getattr(self.base, attr)
 
@@ -205,16 +213,16 @@ class BaseCalculations(Base):
         **check_control**: Checks if the interval contains a root by evaluating the product of 'fa' and 'fb'.
         """
         self.control_value = self.fa * self.fb
-        self.control = self.control_value < 0
+        self.control = self.control_value < 0 # Root exists if signs differ
 
     def switch_interval(self):
         """
         **switch_interval**: Updates the interval based on the sign of the function values.
         """
-        if self.fa * self.fc < 0:
+        if self.fa * self.fc < 0: # Root in left subinterval
             self.b = self.c
-        else:
-            self.a = self.c
+        else: # Root in right subinterval
+            self.a = self.c 
 
     def calc_separator(self, text_1: str, header: str, text_2: str = "", text_3: str = ""):
         """
@@ -232,7 +240,7 @@ class BaseCalculations(Base):
             total_length (int): Total length of the separator.
         """
         total_length = max(len(text_1), len(text_2), len(text_3))
-        side_length = (total_length - len(header)) // 2
+        side_length = (total_length - len(header)) // 2 # Center header
 
         left_side_length = side_length
         right_side_length = total_length - len(header) - left_side_length
@@ -243,6 +251,7 @@ class BaseCalculations(Base):
         """
         **main_loop**: Executes the main iterative process for root-finding.
         """ 
+        # Initialize variables
         iteration = 1
         self.result = {}
         self.get_n()
@@ -257,6 +266,7 @@ class BaseCalculations(Base):
         if self.enable_plot:
             plotter.update_data(self.a, self.b, self.c, self.fc, self.n, self.a_initial, self.b_initial)
 
+        # Format and print iteration info
         left_side_length, right_side_length, total_length = self.calc_separator(
             text_1=f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}',
             text_2=f'a: {self.a}, b: {self.b}, c: {self.c}',
@@ -268,11 +278,13 @@ class BaseCalculations(Base):
         print(f'control: {self.control}, control value: {self.control_value}')
         print("=" * total_length)
 
-        self.switch_interval()
+        self.switch_interval() # Switch interval for next iteration
 
-        time.sleep(self.iteration_speed)
+        time.sleep(self.iteration_speed) # Pause for visualization
 
-        while np.floor(abs(self.fc) * 10 ** (abs(int(np.log10(self.accuracy))) - 1)) != 0 and self.control:
+        # Continue until fc reaches desired accuracy or root found
+        while np.floor(abs(self.fc) * 10 ** (abs(int(np.log10(self.accuracy))) - 1)) != 0 and self.control: # Using floor to avoid floating point errors and * 10 ** (abs(int(np.log10(self.accuracy))) - 1) to get the correct number of decimal places
+            # Calculate next iteration
             iteration += 1
             self.calculate_fa()
             self.calculate_fb()
@@ -283,6 +295,7 @@ class BaseCalculations(Base):
             if self.enable_plot:
                 plotter.update_data(self.a, self.b, self.c, self.fc, self.n, self.a_initial, self.b_initial)
 
+            # Format and print iteration info
             left_side_length, right_side_length, total_length = self.calc_separator(
                 text_1=f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}',
                 text_2=f'a: {self.a}, b: {self.b}, c: {self.c}',
@@ -294,10 +307,11 @@ class BaseCalculations(Base):
             print(f'control: {self.control}, control value: {self.control_value}')
             print("=" * total_length)
 
-            self.switch_interval()
+            self.switch_interval() # Switch interval for next iteration
 
-            time.sleep(self.iteration_speed)
+            time.sleep(self.iteration_speed) # Pause for visualization
 
+            # Check for exact root found
             if self.fc == 0:
                 self.c = self.c
                 break
@@ -311,8 +325,9 @@ class BaseCalculations(Base):
         if not self.control:
             print("No solution found!")
         else:
-            self.result["c"] = self.c
+            self.result["c"] = self.c # Store final result
 
+        # Print final results
         if self.result:
             left_side_length, right_side_length, total_length = self.calc_separator(
                 text_1=f'fa: {self.fa}, fb: {self.fb}, fc: {self.fc}',
@@ -339,6 +354,7 @@ class Bisektion(BaseCalculations):
     def __init__(self, base: BaseCalculations):
         self.base = base
     
+    # Delegate attribute access to base class
     def __getattr__(self, attr):
         return getattr(self.base, attr)
 
@@ -346,7 +362,7 @@ class Bisektion(BaseCalculations):
         """
         **calculate_c**: Calculates the midpoint of the interval.
         """
-        self.c = (self.a + self.b) / 2
+        self.c = (self.a + self.b) / 2 
 
 class NewtonRaphson(BaseCalculations):
     """
@@ -364,6 +380,7 @@ class NewtonRaphson(BaseCalculations):
         self.formula_derivative = formula_derivative
         self.c_derivative = c_derivative
 
+    # Delegate attribute access to base class
     def __getattr__(self, attr):
         return getattr(self.base, attr)
 
@@ -371,14 +388,14 @@ class NewtonRaphson(BaseCalculations):
         """
         **calculate_c**: Calculates the next approximation of the root using the Newton-Raphson formula.
         """
-        self.derivative = eval(self.formula_derivative.format(x=self.c))
+        self.derivative = eval(self.formula_derivative.format(x=self.c)) # Calculate derivative
         try:
-            self.c = self.c - self.fc / self.derivative
+            self.c = self.c - self.fc / self.derivative # Newton-Raphson formula
         except ZeroDivisionError:
             self.separator()
             print("Division by zero! Offsetting by 1e-10")
             self.separator()
-            self.c = self.c - self.fc / (self.derivative + 1e-10)
+            self.c = self.c - self.fc / (self.derivative + 1e-10) # Handle division by zero
 
 class RegulaFalsi(BaseCalculations):
     """
@@ -393,6 +410,7 @@ class RegulaFalsi(BaseCalculations):
     def __init__(self, base: BaseCalculations):
         self.base = base
 
+    # Delegate attribute access to base class
     def __getattr__(self, attr):
         return getattr(self.base, attr)
 
@@ -400,7 +418,7 @@ class RegulaFalsi(BaseCalculations):
         """
         **calculate_c**: Calculates the next approximation of the root using the Regula Falsi formula.
         """
-        self.c = (self.a * self.fb - self.b * self.fa) / (self.fb - self.fa)
+        self.c = (self.a * self.fb - self.b * self.fa) / (self.fb - self.fa) # Regula Falsi formula
 
 class Plotter(BaseCalculations):
     """
@@ -426,6 +444,7 @@ class Plotter(BaseCalculations):
         self.fc_list = fc_list
         self.c_points_text_str_list = c_points_text_str_list
 
+    # Delegate attribute access to base class
     def __getattr__(self, attr):
         return getattr(self.base, attr)
 
@@ -433,14 +452,17 @@ class Plotter(BaseCalculations):
         """
         **initialize_plot**: Sets up the plot layout and initializes plot elements.
         """
+        # Create figure and set title
         self.fig = plt.figure(figsize=(14, 8))
         self.fig.canvas.manager.set_window_title("Nullstellenberechnung durch Iterative-Verfahren")
 
+        # Create x values and calculate y values for function plot
         self.x_func_line = np.linspace(self.a_initial, self.b_initial, 500)
         self.y_func_line = [eval(self.formula.format(x=x, n=self.n)) for x in self.x_func_line]
 
+        # Main subplot for function plot
         self.approach_to_root = self.fig.add_subplot(2, 1, 1)
-        self.func_line_list, = self.approach_to_root.plot(self.x_func_line, self.y_func_line, label=self.formula.replace("{", "").replace("}", ""), color="blue")
+        self.func_line_list, = self.approach_to_root.plot(self.x_func_line, self.y_func_line, label=self.formula.replace("{", "").replace("}", ""), color="blue") # 
         self.c_point_list, = self.approach_to_root.plot([], [], "ro", label="Geschätzte Nullstelle")
         self.a_vertical_line = self.approach_to_root.axvline(0, color="green", linestyle="--", label="a")
         self.b_vertical_line = self.approach_to_root.axvline(0, color="purple", linestyle="--", label="b")
@@ -451,16 +473,18 @@ class Plotter(BaseCalculations):
         self.approach_to_root.grid(True)
         self.approach_to_root.legend(loc="upper left")
 
+        # Log plot of |f(c)| over iterations 
         self.fc_per_iter_logplot = self.fig.add_subplot(2, 2, 3)
         self.fc_per_iter_logplot_line_list, = self.fc_per_iter_logplot.plot([0], [1e-100], "go-", label="|f(c)|")
         self.fc_per_iter_logplot.axhline(0, color="gray", linestyle="--")
         self.fc_per_iter_logplot.set_title("|f(c)| pro Iteration (Logarithmisch)")
         self.fc_per_iter_logplot.set_xlabel("Iteration")
         self.fc_per_iter_logplot.set_ylabel("|f(c)|")
-        self.fc_per_iter_logplot.set_yscale("log")
+        self.fc_per_iter_logplot.set_yscale("log") # Logarithmic y-axis
         self.fc_per_iter_logplot.grid(True)
         self.fc_per_iter_logplot.legend(loc="upper right")
 
+        # Linear plot of f(c) over iterations
         self.fc_per_iter = self.fig.add_subplot(2, 2, 4)
         self.fc_per_iter_line_list, = self.fc_per_iter.plot([], [], "go-", label="f(c)")
         self.fc_per_iter.axhline(0, color="gray", linestyle="--")
@@ -505,24 +529,29 @@ class Plotter(BaseCalculations):
             fc_per_iter_logplot_line_list (list): Updated log plot data for |f(c)|.
             fc_per_iter_line_list (list): Updated plot data for f(c).
         """
+        # Clear previous text annotations
         for text_str in self.c_points_text_str_list:
             text_str.remove()
         self.c_points_text_str_list.clear()
 
+        # Get data for current frame
         a_iter = self.a_list[frame]
         b_iter = self.b_list[frame]
         c_point_x_list = self.c_list[:frame + 1]
         c_point_y_list = self.fc_list[:frame + 1]
 
+        # Update plot elements with current data
         self.c_point_list.set_data(c_point_x_list, c_point_y_list)
         self.a_vertical_line.set_xdata([a_iter])
         self.b_vertical_line.set_xdata([b_iter])
 
+        # Auto-zoom if enabled
         if self.enable_zoom:
             approach_to_root_min_width = abs(a_iter - b_iter)
             approach_to_root_zoom = approach_to_root_min_width * 0.05
             self.approach_to_root.set_xlim(a_iter - approach_to_root_zoom, b_iter + approach_to_root_zoom)
 
+        # Add iteration number annotations
         c_point_text_y_min, c_point_text_y_max = self.approach_to_root.get_ylim()
         c_point_text_y_offset = (c_point_text_y_max - c_point_text_y_min) * 0.05
         for iter in range(len(c_point_x_list)):
@@ -531,11 +560,13 @@ class Plotter(BaseCalculations):
             c_point_text_str_iter = self.approach_to_root.text(c_point_text_x_iter, c_point_text_y_iter + c_point_text_y_offset, str(iter + 1), color="red", fontsize=8, ha="center")
             self.c_points_text_str_list.append(c_point_text_str_iter)
 
+        # Update log plot
         log_fc_list = np.abs(self.fc_list[:frame + 1]) + 1e-10
         self.fc_per_iter_logplot_line_list.set_data(range(1, frame + 2), log_fc_list)
         self.fc_per_iter_logplot.set_xlim(1, len(self.c_list) + 1)
         self.fc_per_iter_logplot.set_ylim(min(log_fc_list) * 0.9, max(log_fc_list) * 1.1)
 
+        # Update linear plot
         self.fc_per_iter_line_list.set_data(range(1, frame + 2), self.fc_list[:frame + 1])
         self.fc_per_iter.set_xlim(1, len(self.c_list) + 1)
         self.fc_per_iter.set_ylim(min(self.fc_list) * 1.5, max(self.fc_list) * 1.1)
@@ -547,17 +578,20 @@ class Plotter(BaseCalculations):
         **plot**: Initializes and displays the plot animation.
         """
         self.initialize_plot()
+        # Create animation with update_plot function
         anim1 = animation.FuncAnimation(self.fig, self.update_plot, frames=len(self.c_list), interval=self.plot_speed, repeat=False)
         plt.tight_layout()
         plt.show()
 
 if __name__ == "__main__":
-    formula = "2*{x} + {x}**2 + 3*{x}**3 - {x}**4" # e.g. {x}**2 - {n}
-    formula_derivative = "2 + 2*{x} + 9*{x}**2 - 4*{x}**3" # e.g. 2 * {x}
-    accuracy = 0.001
-    plot_speed = 300
-    iteration_speed = 0.2
+    # Example formula and its derivative
+    formula = "{x}**2 - {n} " # e.g. {x}**2 - {n} / 2*{x} + {x}**2 + 3*{x}**3 - {x}**4
+    formula_derivative = "2 * {x}" # e.g. 2 * {x} / 2 + 2*{x} + 9*{x}**2 - 4*{x}**3
+    accuracy = 0.001 # e.g. 1e-50
+    plot_speed = 1000 # ms per frame
+    iteration_speed = 0.2 # s per iteration
 
+    # Initialize all components
     base = Base(formula, accuracy)
     base_calculations = BaseCalculations(base, iteration_speed)
     bisektion = Bisektion(base_calculations)
@@ -565,8 +599,5 @@ if __name__ == "__main__":
     regula_falsi = RegulaFalsi(base_calculations)
     plotter = Plotter(base_calculations, plot_speed)
 
+    # Start the selected method
     base.start_method()
-
-# add comments to the code - wichtige teile wie , bei plot initialisierung
-# Aufgabe 8 und 9
-# 542: UserWarning: Attempting to set identical low and high ylims makes transformation singular; automatically expanding. self.fc_per_iter.set_ylim(min(self.fc_list) * 1.5, max(self.fc_list) * 1.1)
